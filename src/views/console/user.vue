@@ -4,15 +4,15 @@
       <el-col :span="12">
         <el-form @submit.native.prevent :inline="true">
             <el-form-item>
-              <el-button type="primary" :disabled="!actions.includes('ADD_USER')" size="small" @click="openAdd">新增</el-button>
+              <el-button type="primary" :disabled="!actions.includes('post_users')" size="small" @click="openAdd">新增</el-button>
             </el-form-item>
           </el-form>
           <el-table :data="users" @row-click="selUser" border style="width: 100%;">
             <el-table-column label="操作" width="150">
               <template slot-scope="scope">
                 <el-button-group>
-                  <el-button type="primary" size="small" :disabled="!actions.includes('EDIT_USER')" @click="openEdit(scope.row)">编辑</el-button>
-                  <el-button type="danger" size="small" :disabled="!actions.includes('REMOVE_USER')" @click="remove(scope.row.id)">删除</el-button>
+                  <el-button type="primary" size="small" :disabled="!actions.includes('patch_users')" @click="openEdit(scope.row)">编辑</el-button>
+                  <el-button type="danger" size="small" :disabled="!actions.includes('delete_users')" @click="remove(scope.row.id)">删除</el-button>
                 </el-button-group>
               </template>
             </el-table-column>
@@ -144,7 +144,7 @@ export default {
       this.curUserName = row.name
       userMenus(row.id).then(res => {
         const ids = []
-        res.data.forEach(menuid => {
+        Object.keys(res.data).forEach(menuid => {
           ids.push(menuid)
         })
         const that = this

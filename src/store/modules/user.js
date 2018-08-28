@@ -1,6 +1,7 @@
-import { loginByAccount, logout } from '@/api/console/login'
+import { loginByAccount, cacheAction, logout } from '@/api/console/login'
 import { getUserInfo } from '@/api/console/user'
 import { TOKEN_KEY } from '@/utils/constant'
+import { asyncRouterMap } from '@/router'
 import md5 from 'js-md5'
 
 const user = {
@@ -24,8 +25,14 @@ const user = {
     loginByAccount({ commit }, userInfo) {
       const account = userInfo.account.trim()
       return new Promise((resolve, reject) => {
-        loginByAccount(account.trim(), md5(userInfo.password.trim())).then(response => {
-          sessionStorage.setItem(TOKEN_KEY, response.data)
+        loginByAccount(account.trim(), md5(userInfo.password.trim())).then(res => {
+          const retdata = res.data
+          if (retdata.needCacheAction) {
+            const actions = {}
+            menuTreeOpt(actions, asyncRouterMap)
+            cacheAction(actions)
+          }
+          sessionStorage.setItem(TOKEN_KEY, retdata.sessionid)
           resolve()
         }).catch(error => {
           reject(error)
@@ -63,6 +70,20 @@ const user = {
       })
     }
   }
+}
+
+function menuTreeOpt(actions, menus) {
+  menus.filter(route => {
+    if (route.children && route.children.length > 0) {
+      menuTreeOpt(actions, route.children)
+    } else {
+      if (route.action) {
+        route.action.forEach(item => {
+          actions[item.key] = item.name
+        })
+      }
+    }
+  })
 }
 
 export default user

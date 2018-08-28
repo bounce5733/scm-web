@@ -81,11 +81,11 @@ export const asyncRouterMap = [
       name: 'console_user',
       meta: { title: '用户', icon: 'component', noCache: true },
       action: [{
-        name: '新增用户', key: 'ADD_USER'
+        name: '新增用户', key: 'post_users'
       }, {
-        name: '编辑用户', key: 'EDIT_USER'
+        name: '编辑用户', key: 'patch_users'
       }, {
-        name: '删除用户', key: 'REMOVE_USER'
+        name: '删除用户', key: 'delete_users'
       }]
     }, {
       path: 'role',
@@ -93,11 +93,11 @@ export const asyncRouterMap = [
       name: 'console_role',
       meta: { title: '角色', icon: 'component', noCache: true },
       action: [{
-        name: '新增角色', key: 'ADD_ROLE'
+        name: '新增角色', key: 'post_roles'
       }, {
-        name: '分配权限', key: 'ASSIGN_ROLE'
+        name: '分配权限', key: 'post_{id}_assign_menus'
       }, {
-        name: '授权用户', key: 'ASSIGN_USER'
+        name: '授权用户', key: 'post_{id}_assign_users'
       }]
     }, {
       path: 'code',
@@ -105,15 +105,15 @@ export const asyncRouterMap = [
       name: 'console_code',
       meta: { title: '字典', icon: 'component', noCache: true },
       action: [{
-        name: '新增字典', key: 'ADD_CODE'
+        name: '新增字典', key: 'post_codes'
       }, {
-        name: '删除字典', key: 'REMOVE_CODE'
+        name: '删除字典', key: 'delete_codes'
       }, {
-        name: '新增字典项目', key: 'ADD_CODE_ITEM'
+        name: '新增字典项目', key: 'post_codes_item'
       }, {
-        name: '编辑字典项目', key: 'EDIT_CODE_ITEM'
+        name: '编辑字典项目', key: 'patch_codes_item'
       }, {
-        name: '删除字典项目', key: 'REMOVE_CODE_ITEM'
+        name: '删除字典项目', key: 'remove_codes_item'
       }]
     }]
   },

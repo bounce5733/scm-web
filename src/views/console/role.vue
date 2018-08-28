@@ -4,7 +4,7 @@
       <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
         <el-form :inline="true" @submit.native.prevent>
           <el-form-item>
-            <el-button type="primary" :disabled="!actions.includes('ADD_ROLE')" @click="openAdd" size="small">新增</el-button>
+            <el-button type="primary" :disabled="!actions.includes('post_roles')" @click="openAdd" size="small">新增</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -15,8 +15,8 @@
       <el-table-column label="操作" align="center" width="250">
         <template slot-scope="scope">
           <el-button-group>
-            <el-button type="primary" size="small" :disabled="!actions.includes('ASSIGN_ROLE')" @click="openAssignMenus(scope.$index, scope.row)">分配权限</el-button>
-            <el-button type="primary" size="small" :disabled="!actions.includes('ASSIGN_USER')" @click="openAssignUsers(scope.$index, scope.row)">授权用户</el-button>
+            <el-button type="primary" size="small" :disabled="!actions.includes('post__assign_menus')" @click="openAssignMenus(scope.$index, scope.row)">分配权限</el-button>
+            <el-button type="primary" size="small" :disabled="!actions.includes('post__assign_users')" @click="openAssignUsers(scope.$index, scope.row)">授权用户</el-button>
             <el-button type="primary" size="small" v-if="scope.row.name != superAdminKey" icon="el-icon-edit" @click="openEdit(scope.$index, scope.row)">编辑</el-button>
             <el-button type="danger" v-if="scope.row.name != superAdminKey" icon="el-icon-delete" size="small" @click="remove(scope.row)">删除</el-button>
           </el-button-group>

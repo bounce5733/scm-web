@@ -13,6 +13,14 @@ export function loginByAccount(account, password) {
   })
 }
 
+export function cacheAction(actions) {
+  return request({
+    url: CONSOLE_API_BASE + '/sys/action',
+    method: 'post',
+    data: actions
+  })
+}
+
 export function logout() {
   return request({
     url: CONSOLE_API_BASE + '/sys/logout',
