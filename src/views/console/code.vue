@@ -4,14 +4,14 @@
       <el-col :span="12">
         <el-form @submit.native.prevent :inline="true">
           <el-form-item>
-            <el-button type="primary" :disabled="!actions.includes('post_codes')" size="small" @click="openCodeAdd">新增</el-button>
+            <el-button type="primary" :disabled="!actions.includes('addCode')" size="small" @click="openCodeAdd">新增</el-button>
           </el-form-item>
         </el-form>
         <el-table :data="codes" @row-click="showItem" highlight-current-row stripe border style="width: 100%;">
           <el-table-column label="操作" width="78">
             <template slot-scope="scope">
               <el-button-group>
-                <el-button type="danger" size="small" :disabled="!actions.includes('delete_codes')" @click="removeCode(scope.row.code)">删除</el-button>
+                <el-button type="danger" size="small" :disabled="!actions.includes('removeCode')" @click="removeCode(scope.row.code)">删除</el-button>
               </el-button-group>
             </template>
           </el-table-column>
@@ -22,15 +22,15 @@
       <el-col :span="12">
         <el-form @submit.native.prevent :inline="true">
           <el-form-item>
-            <el-button type="primary" :disabled="code.code === undefined || !actions.includes('post_codes_item')" @click="openItemAdd" size="small">新增</el-button>
+            <el-button type="primary" :disabled="code.code === undefined || !actions.includes('addItem')" @click="openItemAdd" size="small">新增</el-button>
           </el-form-item>
         </el-form>
         <el-table :data="code.items" highlight-current-row border style="width: 100%;">
           <el-table-column align="center" label="操作" width="150">
             <template slot-scope="scope">
               <el-button-group>
-                <el-button type="primary" @click="openItemEdit(scope.$index, scope.row)" :disabled="!actions.includes('patch_codes_item')" size="small">编辑</el-button>
-                <el-button type="danger" @click="removeItem(scope.$index, scope.row)" :disabled="!actions.includes('remove_codes_item')" size="small">删除</el-button>
+                <el-button type="primary" @click="openItemEdit(scope.$index, scope.row)" :disabled="!actions.includes('editItem')" size="small">编辑</el-button>
+                <el-button type="danger" @click="removeItem(scope.$index, scope.row)" :disabled="!actions.includes('removeItem')" size="small">删除</el-button>
               </el-button-group>
             </template>
           </el-table-column>

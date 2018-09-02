@@ -81,11 +81,11 @@ export const asyncRouterMap = [
       name: 'console_user',
       meta: { title: '用户', icon: 'component', noCache: true },
       action: [{
-        name: '新增用户', key: 'post_users'
+        name: '新增用户', key: 'addUser'
       }, {
-        name: '编辑用户', key: 'patch_users'
+        name: '编辑用户', key: 'editUser'
       }, {
-        name: '删除用户', key: 'delete_users'
+        name: '删除用户', key: 'removeUser'
       }]
     }, {
       path: 'role',
@@ -93,11 +93,15 @@ export const asyncRouterMap = [
       name: 'console_role',
       meta: { title: '角色', icon: 'component', noCache: true },
       action: [{
-        name: '新增角色', key: 'post_roles'
+        name: '新增角色', key: 'addRole'
       }, {
-        name: '分配权限', key: 'post_{id}_assign_menus'
+        name: '编辑角色', key: 'editRole'
       }, {
-        name: '授权用户', key: 'post_{id}_assign_users'
+        name: '删除角色', key: 'removeRole'
+      }, {
+        name: '分配权限', key: 'assignMenus'
+      }, {
+        name: '授权用户', key: 'assignUsers'
       }]
     }, {
       path: 'code',
@@ -105,16 +109,21 @@ export const asyncRouterMap = [
       name: 'console_code',
       meta: { title: '字典', icon: 'component', noCache: true },
       action: [{
-        name: '新增字典', key: 'post_codes'
+        name: '新增字典', key: 'addCode'
       }, {
-        name: '删除字典', key: 'delete_codes'
+        name: '删除字典', key: 'removeCode'
       }, {
-        name: '新增字典项目', key: 'post_codes_item'
+        name: '新增字典项目', key: 'addItem'
       }, {
-        name: '编辑字典项目', key: 'patch_codes_item'
+        name: '编辑字典项目', key: 'editItem'
       }, {
-        name: '删除字典项目', key: 'remove_codes_item'
+        name: '删除字典项目', key: 'removeItem'
       }]
+    }, {
+      path: 'optlog',
+      component: _import('console/optlog'),
+      name: 'console_optlog',
+      meta: { title: '操作日志', icon: 'component', noCache: true }
     }]
   },
   { path: '*', redirect: '/404', hidden: true }
