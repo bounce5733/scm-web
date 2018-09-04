@@ -88,7 +88,7 @@ export default {
       this.queryByPage()
     },
     sorData: function(sortobj) {
-      this.params.order = sortobj.order === null ? '' : sortobj.order ==='ascending' ? 'asc' : 'desc'
+      this.params.order = sortobj.order === null ? '' : sortobj.order === 'ascending' ? 'asc' : 'desc'
       this.queryByPage()
     }
   },

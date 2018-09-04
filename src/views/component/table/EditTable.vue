@@ -21,6 +21,7 @@
           <el-form-item style="text-align:right">
             <el-button type="primary">保存并新增</el-button>
             <el-button type="primary">保存</el-button>
+            <el-button type="primary" @click="send">发送websocket消息</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -55,6 +56,7 @@ import { parseDate } from '@/utils'
 export default {
   data() {
     return {
+      websocket: null,
       orderDate: '2018-07-29',
       tableData: [
         {
@@ -104,7 +106,50 @@ export default {
     },
     formatDate: function(row) {
       row.date = row.date === null ? '' : parseDate(row.date)
+    },
+    send: function() {
+      const msg = 'hello websocket'
+      this.websocket.send(msg)
+    },
+    closeWebSocket: function() {
+      this.websocket.close()
     }
+  },
+  mounted() {
+    // 判断当前浏览器是否支持WebSocket
+    if ('WebSocket' in window) {
+      this.websocket = new WebSocket('ws://localhost:9111/websocket')
+    } else {
+      console.log('not support websocket')
+    }
+
+    // 连接发生错误的回调方法
+    this.websocket.onerror = function() {
+      console.log('error')
+    }
+
+    // 连接成功建立的回调方法
+    this.websocket.onopen = function(event) {
+      console.log('open')
+    }
+
+    // 接收到消息的回调方法
+    this.websocket.onmessage = function(event) {
+      console.log(event.data)
+    }
+
+    // 连接关闭的回调方法
+    this.websocket.onclose = function() {
+      console.log('close')
+    }
+
+    // 监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+    window.onbeforeunload = function() {
+      this.websocket.close()
+    }
+  },
+  beforeDestroy() {
+    this.closeWebSocket()
   }
 }
 </script>
