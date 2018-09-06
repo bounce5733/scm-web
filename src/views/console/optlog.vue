@@ -4,7 +4,7 @@
       <el-form :inline="true" @submit.native.prevent>
         <el-form-item>
           <el-input v-model="optType" @keyup.native.enter="queryByPage" placeholder="请输入操作类型关键字" style="width: 530px;">
-            <el-select slot="prepend" style="width: 110px;" v-model="dateRange">
+            <el-select slot="prepend" @change="dateChange" style="width: 110px;" v-model="dateRange">
               <el-option
                 v-for="item in dateRangeOptions"
                 :key="item.value"
@@ -13,7 +13,7 @@
               </el-option>
             </el-select>
             <span slot="prepend">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <el-select slot="prepend" style="width: 80px;" v-model="operator">
+            <el-select slot="prepend" @change="operatorChange" style="width: 80px;" v-model="operator">
               <el-option
                 v-for="item in operatorOptions"
                 :key="item.value"
@@ -32,7 +32,7 @@
       <el-table-column prop="optType" label="操作类型" width="120" sortable></el-table-column>
       <el-table-column prop="optLog" label="操作日志" sortable></el-table-column>
     </el-table>
-    <el-pagination layout="prev, pager, next" @current-change="handlePageChange" :page-size="params.pageSize" :total="total" style="float:right;">
+    <el-pagination layout="prev, pager, next" @current-change="pageChange" :page-size="params.pageSize" :total="total" style="float:right;">
     </el-pagination>
  </div>
 </template>
@@ -78,12 +78,40 @@ export default {
   },
   methods: {
     queryByPage: function() {
-      queryByPage(this.optType, this.params).then(res => {
+      const endTime = new Date()
+      let startTime = ''
+      switch (this.dateRange) {
+        case 'oneMonth':
+          startTime = new Date().setTime(endTime.getTime() - 3600 * 1000 * 24 * 30)
+          break
+        case 'oneDay':
+          startTime = new Date().setTime(endTime.getTime() - 3600 * 1000 * 24)
+          break
+        case 'oneWeek':
+          startTime = new Date().setTime(endTime.getTime() - 3600 * 1000 * 24 * 7)
+          break
+        case 'threeMonth':
+          startTime = new Date().setTime(endTime.getTime() - 3600 * 1000 * 24 * 90)
+          break
+      }
+      let isme = true
+      if (this.operator === 'all') {
+        isme = false
+      }
+      queryByPage(this.optType, isme, startTime, endTime, this.params).then(res => {
         this.logs = res.data.list
         this.total = res.data.total
       })
     },
-    handlePageChange: function(val) {
+    operatorChange: function() {
+      this.params.pageNum = 1
+      this.queryByPage()
+    },
+    dateChange: function() {
+      this.params.pageNum = 1
+      this.queryByPage()
+    },
+    pageChange: function(val) {
       this.params.pageNum = val
       this.queryByPage()
     },
@@ -97,7 +125,3 @@ export default {
   }
 }
 </script>
-
-<style rel="stylesheet/scss" lang="scss" scoped>
-  
-</style>

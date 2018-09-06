@@ -60,13 +60,26 @@ export const asyncRouterMap = [
       path: '/component/table',
       component: _import('component/Layout'),
       name: 'component_table',
-      meta: { title: '表格', icon: 'component', noCache: true },
+      meta: { title: '表格', noCache: true },
       children: [{
         path: 'edit',
         component: _import('component/table/EditTable'),
         name: 'component_table_EditTable',
-        meta: { title: '编辑表格', icon: 'component', noCache: true }
+        meta: { title: '编辑表格', noCache: true }
       }]
+    }]
+  },
+  {
+    path: '/bas',
+    component: Layout,
+    redirect: '/bas/company',
+    name: 'bas',
+    meta: { title: '基础信息', icon: 'component' },
+    children: [{
+      path: 'company',
+      component: _import('bas/company'),
+      name: 'bas_company',
+      meta: { title: '公司信息', noCache: true }
     }]
   },
   {
@@ -74,12 +87,12 @@ export const asyncRouterMap = [
     component: Layout,
     redirect: '/console/user',
     name: 'console',
-    meta: { title: '控制台', icon: 'component' },
+    meta: { title: '控制台', icon: 'setting' },
     children: [{
       path: 'user',
       component: _import('console/user'),
       name: 'console_user',
-      meta: { title: '用户', icon: 'component', noCache: true },
+      meta: { title: '用户', noCache: true },
       action: [{
         name: '新增用户', key: 'addUser'
       }, {
@@ -91,7 +104,7 @@ export const asyncRouterMap = [
       path: 'role',
       component: _import('console/role'),
       name: 'console_role',
-      meta: { title: '角色', icon: 'component', noCache: true },
+      meta: { title: '角色', noCache: true },
       action: [{
         name: '新增角色', key: 'addRole'
       }, {
@@ -107,7 +120,7 @@ export const asyncRouterMap = [
       path: 'code',
       component: _import('console/code'),
       name: 'console_code',
-      meta: { title: '字典', icon: 'component', noCache: true },
+      meta: { title: '字典', noCache: true },
       action: [{
         name: '新增字典', key: 'addCode'
       }, {
@@ -123,7 +136,12 @@ export const asyncRouterMap = [
       path: 'optlog',
       component: _import('console/optlog'),
       name: 'console_optlog',
-      meta: { title: '操作日志', icon: 'component', noCache: true }
+      meta: { title: '日志', noCache: true }
+    }, {
+      path: 'set',
+      component: _import('console/set'),
+      name: 'console_set',
+      meta: { title: '设置', noCache: true }
     }]
   },
   { path: '*', redirect: '/404', hidden: true }

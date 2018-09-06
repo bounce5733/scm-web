@@ -6,24 +6,49 @@
     <breadcrumb class="breadcrumb-container"></breadcrumb>
     
     <div class="right-menu">
-      <el-dropdown class="avatar-container right-menu-item" trigger="click">
+      <el-dropdown class="avatar-container right-menu-item" trigger="hover">
         <div class="avatar-wrapper">
-          <img class="user-avatar" :src="avatar+'?imageView2/1/w/80/h/80'">
-          <i class="el-icon-caret-bottom"></i>
+          <span>{{username}}</span>
+          <svg-icon icon-class="admin"></svg-icon>
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/">
             <el-dropdown-item>
-              首页
+              <svg-icon icon-class="icon-account"></svg-icon>&nbsp;&nbsp;账号信息
             </el-dropdown-item>
           </router-link>
-          <a target='_blank' href="https://github.com/PanJiaChen/vue-element-admin/">
-            <el-dropdown-item>
-              github
-            </el-dropdown-item>
-          </a>
           <el-dropdown-item divided>
-            <span @click="logout" style="display:block;">退出登录</span>
+            <svg-icon icon-class="icon-account"></svg-icon><span @click="logout">&nbsp;&nbsp;退出</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+      <el-dropdown class="avatar-container right-menu-item" trigger="hover">
+        <div class="avatar-wrapper">
+          <svg-icon icon-class="services"></svg-icon>
+        </div>
+        <el-dropdown-menu slot="dropdown">
+          <router-link to="/">
+            <el-dropdown-item>
+              <svg-icon icon-class="icon-account"></svg-icon>&nbsp;&nbsp;账号信息
+            </el-dropdown-item>
+          </router-link>
+          <el-dropdown-item divided>
+            <svg-icon icon-class="icon-account"></svg-icon><span @click="logout">&nbsp;&nbsp;退出</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+      <el-dropdown class="avatar-container right-menu-item" trigger="hover">
+        <div class="avatar-wrapper">
+          <svg-icon icon-class="bell"></svg-icon>
+        </div>
+        <el-dropdown-menu slot="dropdown">
+          <router-link to="/">
+            <el-dropdown-item>
+              <svg-icon icon-class="icon-account"></svg-icon>&nbsp;&nbsp;账号信息
+            </el-dropdown-item>
+          </router-link>
+          <el-dropdown-item divided>
+            <svg-icon icon-class="icon-account"></svg-icon><span @click="logout">&nbsp;&nbsp;退出</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -41,10 +66,14 @@ export default {
     Hamburger,
     Breadcrumb
   },
+  data() {
+    return {
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'username'
     ])
   },
   methods: {

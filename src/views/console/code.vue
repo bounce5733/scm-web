@@ -201,6 +201,7 @@ export default {
     },
     // ------新增类型------
     openCodeAdd: function() {
+      this.code = {}
       this.codeFormVisible = true
     },
     saveCode: function() {
@@ -253,7 +254,7 @@ export default {
     openItemAdd: function() {
       this.itemFormTitle = '新增'
       this.itemFormVisible = true
-      this.item.sort = 1
+      this.item.sort = this.code.items.length + 1
       this.pcodes = this.$store.state.code.codes[this.code.code] === undefined ? [] : this.$store.state.code.codes[this.code.code]
     },
     openItemEdit: function(index, row) {
