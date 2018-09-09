@@ -21,6 +21,14 @@ export function cacheAction(actions) {
   })
 }
 
+export function register(info) {
+  return request({
+    url: CONSOLE_API_BASE + '/sys/register',
+    method: 'post',
+    data: info
+  })
+}
+
 export function logout() {
   return request({
     url: CONSOLE_API_BASE + '/sys/logout',

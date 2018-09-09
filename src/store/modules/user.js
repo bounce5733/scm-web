@@ -1,13 +1,16 @@
-import { loginByAccount, cacheAction, logout } from '@/api/console/login'
+import { loginByAccount, cacheAction, logout } from '@/api/console/sys'
 import { getUserInfo } from '@/api/console/user'
-import { TOKEN_KEY } from '@/utils/constant'
+import { TOKEN_KEY, TIP_DURATION_TIME } from '@/utils/constant'
 import { asyncRouterMap } from '@/router'
+import { Message } from 'element-ui'
+import store from '@/store'
 import md5 from 'js-md5'
 
 const user = {
   state: {
     account: '',
     name: '',
+    appid: '',
     avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
   },
 
@@ -17,6 +20,9 @@ const user = {
     },
     SET_ACCOUNT: (state, account) => {
       state.account = account
+    },
+    SET_APPID: (state, appid) => {
+      state.appid = appid
     }
   },
 
@@ -26,14 +32,23 @@ const user = {
       const account = userInfo.account.trim()
       return new Promise((resolve, reject) => {
         loginByAccount(account.trim(), md5(userInfo.password.trim())).then(res => {
-          const retdata = res.data
-          if (retdata.needCacheAction) {
-            const actions = {}
-            menuTreeOpt(actions, asyncRouterMap)
-            cacheAction(actions)
+          if (res.status === 204) {
+            Message({
+              message: '用户名或密码错误',
+              type: 'warning',
+              duration: TIP_DURATION_TIME
+            })
+            reject()
+          } else {
+            const retdata = res.data
+            if (retdata.needCacheAction) {
+              const actions = {}
+              menuTreeOpt(actions, asyncRouterMap)
+              cacheAction(actions)
+            }
+            sessionStorage.setItem(TOKEN_KEY, retdata.sessionid)
+            resolve()
           }
-          sessionStorage.setItem(TOKEN_KEY, retdata.sessionid)
-          resolve()
         }).catch(error => {
           reject(error)
         })
@@ -47,10 +62,16 @@ const user = {
           if (!res.data) { // 由于mockjs 不支持自定义状态码只能这样hack
             reject('error')
           }
+
+          // ------加载码表------
+          store.dispatch('addCodes')
+          store.dispatch('addCodesPathMap')
+
           const userinfo = res.data
           const user = userinfo.user
           commit('SET_ACCOUNT', user.account)
           commit('SET_NAME', user.name)
+          commit('SET_APPID', user.appid)
           resolve(userinfo.menus)
         }).catch(error => {
           reject(error)

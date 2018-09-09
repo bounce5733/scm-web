@@ -18,10 +18,6 @@ Vue.use(Element, {
   size: 'medium' // set element-ui default size
 })
 
-// ------加载码表------
-store.dispatch('addCodes')
-store.dispatch('addPathMap')
-
 new Vue({
   el: '#app',
   router,

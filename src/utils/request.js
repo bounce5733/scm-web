@@ -1,7 +1,7 @@
 import axios from 'axios'
 import router from '@/router'
 import { Message } from 'element-ui'
-import { TOKEN_KEY } from '@/utils/constant'
+import { TOKEN_KEY, TIP_DURATION_TIME } from '@/utils/constant'
 
 // create an axios instance
 const service = axios.create({
@@ -31,7 +31,7 @@ service.interceptors.response.use(
       Message({
         message: '会话过期，请重新登录',
         type: 'warning',
-        duration: 3 * 1000
+        duration: TIP_DURATION_TIME
       })
       router.push('/login')
     } else {
@@ -39,7 +39,7 @@ service.interceptors.response.use(
       Message({
         message: error.message,
         type: 'error',
-        duration: 3 * 1000
+        duration: TIP_DURATION_TIME
       })
     }
     return Promise.reject(error)

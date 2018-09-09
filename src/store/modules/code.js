@@ -19,7 +19,7 @@ const codes = {
         commit('ADD_CODES', res.data)
       })
     },
-    addPathMap({ commit, state }) {
+    addCodesPathMap({ commit, state }) {
       cachePathMap().then(res => {
         commit('ADD_PATH_MAP', res.data)
       })

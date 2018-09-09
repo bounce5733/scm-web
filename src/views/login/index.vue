@@ -35,25 +35,54 @@
           </el-form>
           <div class="down-con">
             <a class="down-a" href="#"><em class="ui-icon-phone"></em>手机下载</a>
-            <a class="register-a" href="#"><em class="ui-icon-register"></em>注册</a>
+            <a class="register-a" @click="openRegister" href="#"><em class="ui-icon-register"></em>注册</a>
           </div>
         </div>
       </div>
     </div>
+
+    <!--注册-->
+    <el-dialog :title="registerTitle" :close-on-click-modal="false" :visible.sync="registerFormVisible">
+      <el-form :model="registerInfo" ref="registerForm" :rules="registerRules" label-width="100px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="账号" prop="account">
+              <el-input v-model="registerInfo.account"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="姓名" prop="name">
+              <el-input v-model="registerInfo.name"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="手机" prop="mobile">
+              <el-input v-model="registerInfo.mobile"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="公司名称" prop="companyName">
+              <el-input v-model="registerInfo.companyName"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native="cancelRegister">取消</el-button>
+        <el-button type="primary" @click.native="register">确认</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { isvalidAccount } from '@/utils/validate'
+import { SUCCESS_TIP_TITLE, WARNING_TIP_TITLE } from '@/utils/constant'
+import { register } from '@/api/console/sys'
+
 export default {
   data() {
-    const validateAccount = (rule, value, callback) => {
-      if (!isvalidAccount(value)) {
-        callback(new Error('账号错误！'))
-      } else {
-        callback()
-      }
-    }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 3) {
         callback(new Error('密码不能少于3位！'))
@@ -68,13 +97,35 @@ export default {
         password: ''
       },
       loginRules: {
-        account: [{ required: true, trigger: 'blur', validator: validateAccount }],
+        account: [{ required: true, trigger: 'blur', message: '账号不能为空' }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+      },
+      // 注册
+      registerTitle: '注册账号',
+      registerFormVisible: false,
+      registerInfo: {},
+      registerRules: {
+        account: [
+          { required: true, trigger: 'blur', message: '账号不能为空' },
+          { max: 45, message: '最大长度45个字符', trigger: 'blur' }
+        ],
+        name: [
+          { required: true, trigger: 'blur', message: '姓名不能为空' },
+          { max: 45, message: '最大长度45个字符', trigger: 'blur' }
+        ],
+        companyName: [
+          { required: true, trigger: 'blur', message: '公司名称不能为空' },
+          { max: 30, message: '最大长度30个字符', trigger: 'blur' }
+        ],
+        mobile: [
+          { required: true, trigger: 'blur', message: '手机不能为空' },
+          { max: 11, message: '最大长度11个字符', trigger: 'blur' }
+        ]
       }
     }
   },
   methods: {
-    handleLogin() {
+    handleLogin: function() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
@@ -87,6 +138,42 @@ export default {
         } else {
           console.log('error submit!!')
           return false
+        }
+      })
+    },
+    openRegister: function() {
+      this.registerInfo = {}
+      this.registerFormVisible = true
+    },
+    cancelRegister: function() {
+      this.registerFormVisible = false
+    },
+    register: function() {
+      this.$refs.registerForm.validate((valid) => {
+        if (valid) {
+          register(this.registerInfo).then(res => {
+            if (res.status === 204) {
+              this.$notify({
+                title: WARNING_TIP_TITLE,
+                message: '公司名称已被注册，请重新输入',
+                type: 'warning'
+              })
+            } else if (res.status === 226) {
+              this.$notify({
+                title: WARNING_TIP_TITLE,
+                message: '账号已存在，请重新输入',
+                type: 'warning'
+              })
+            } else {
+              this.$notify({
+                title: SUCCESS_TIP_TITLE,
+                message: '注册成功',
+                type: 'success'
+              })
+              this.$refs.registerForm.resetFields()
+              this.registerFormVisible = false
+            }
+          })
         }
       })
     }

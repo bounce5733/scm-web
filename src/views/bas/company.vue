@@ -10,7 +10,7 @@
                 <el-input v-model="company.name"></el-input>
               </el-form-item>
               <el-form-item label="行业类别">
-                <el-cascader
+                <el-cascader style="width:100%"
                   expand-trigger="hover"
                   :options="industryCategorys"
                   clearable
@@ -20,7 +20,7 @@
                 </el-cascader>
               </el-form-item>
               <el-form-item label="区域">
-                <el-cascader
+                <el-cascader style="width:100%"
                   expand-trigger="hover"
                   :options="areas"
                   clearable
@@ -35,24 +35,24 @@
               <el-row>
                 <el-col :span="12">
                   <el-form-item label="联系人">
-                    <el-input v-model="company.linkman" placeholder="请输入联系人名字"></el-input>
+                    <el-input v-model="company.linkmanName" placeholder="请输入联系人名字"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
                   <el-form-item label="职位">
-                    <el-input v-model="company.position" placeholder="请输入联系人职位名称"></el-input>
+                    <el-input v-model="company.linkmanPosition" placeholder="请输入联系人职位名称"></el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
               <el-row>
                 <el-col :span="12">
                   <el-form-item label="手机">
-                    <el-input v-model="company.mobile" placeholder="请输入联系人手机号码"></el-input>
+                    <el-input v-model="company.linkmanMobile" placeholder="请输入联系人手机号码"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
                   <el-form-item label="QQ">
-                    <el-input v-model="company.qq" placeholder="请输入联系人QQ号码"></el-input>
+                    <el-input v-model="company.linkmanQQ" placeholder="请输入联系人QQ号码"></el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -62,8 +62,16 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="公司logo">
-                <el-upload list-type="picture-card">
-                  <i class="el-icon-plus"></i>
+                <el-upload
+                  list-type="picture-card"
+                  :action="companyAvatarAction"
+                  :headers="companyAvatarHeader"
+                  class="avatar-uploader"
+                  :show-file-list="false"
+                  :on-success="handleAvatarSuccess"
+                  :before-upload="beforeAvatarUpload">
+                  <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
               </el-form-item>
               <el-form-item label="详细地址">
@@ -115,6 +123,7 @@
 </template>
 
 <script>
+import { CONSOLE_API_BASE, TOKEN_KEY } from '@/utils/constant'
 
 export default {
   data() {
@@ -124,6 +133,11 @@ export default {
         value: 'id',
         children: 'children'
       },
+      companyAvatarAction: CONSOLE_API_BASE + '/attachs/companyAvatar',
+      companyAvatarHeader: {
+        'X-Auth-Token': sessionStorage.getItem(TOKEN_KEY)
+      },
+      imageUrl: '',
       industryCategorys: this.$store.state.code.codes.industry_category,
       areas: this.$store.state.code.codes.area,
       company: {
@@ -131,6 +145,23 @@ export default {
     }
   },
   methods: {
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
+    },
+    beforeAvatarUpload(file) {
+      let vaild = true
+      const isLt200K = file.size / 1024 <= 200
+      if (file.type !== 'image/jpeg' && file.type !== 'image/jpn' && file.type !== 'image/png' && file.type !== 'image/svg') {
+        this.$message.error('上传头像图片只能是 JPG|JPEG|PNG|SVG 格式!')
+        vaild = false
+      }
+      if (!isLt200K) {
+        this.$message.error('上传头像图片大小不能超过200K!')
+        vaild = false
+      }
+      console.log(file)
+      return vaild
+    }
   },
   mounted() {
   }
@@ -142,6 +173,29 @@ export default {
     color: #03b8cc;
     font-weight: 500;
     margin-bottom: 30px;
+  }
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 100px;
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+  }
+  .avatar {
+    width: 100px;
+    height: 100px;
+    display: block;
   }
 </style>
 

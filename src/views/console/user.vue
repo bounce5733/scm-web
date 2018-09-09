@@ -66,7 +66,7 @@ import { SUCCESS_TIP_TITLE, SAVE_SUCCESS, REMOVE_SUCCESS } from '@/utils/constan
 
 export default {
   data() {
-    const validateName = (rule, value, callback) => {
+    const validateAccount = (rule, value, callback) => {
       if (!value || value.trim().length === 0) {
         return callback(new Error('账号不能为空'))
       }
@@ -103,7 +103,7 @@ export default {
       oldAccount: '',
       userRules: {
         account: [
-          { required: true, trigger: 'blur', validator: validateName },
+          { required: true, trigger: 'blur', validator: validateAccount },
           { max: 45, message: '最大长度45个字符', trigger: 'blur' }
         ],
         name: [
@@ -127,6 +127,7 @@ export default {
         this.users = res.data
         this.curUserName = this.users[0].name
         userMenus(this.users[0].id).then(res => {
+          console.log(JSON.stringify(res.data))
           const ids = []
           Object.keys(res.data).forEach(menuid => {
             ids.push(menuid)

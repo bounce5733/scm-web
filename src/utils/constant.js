@@ -14,6 +14,10 @@ export const WARNING_TIP_TITLE = '警告'
 
 export const ERROR_TIP_TITLE = '错误'
 
+// 提示框停留时间
+
+export const TIP_DURATION_TIME = 3 * 1000
+
 // 超级管理员key
 export const SUPER_ADMIN_KEY = 'super_admin'
 
