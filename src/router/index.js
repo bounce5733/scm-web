@@ -80,6 +80,11 @@ export const asyncRouterMap = [
       component: _import('bas/company'),
       name: 'bas_company',
       meta: { title: '公司信息', noCache: true }
+    }, {
+      path: 'hr',
+      component: _import('bas/hr/index'),
+      name: 'bas_hr',
+      meta: { title: '部门与员工', noCache: true }
     }]
   },
   {

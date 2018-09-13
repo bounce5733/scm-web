@@ -324,35 +324,36 @@ export default {
       this.curRoleid = row.id
       const that = this
       roleMenus(this.curRoleid).then(res => {
-        const ids = []
+        const menuKeys = []
         const actionMap = {} // 菜单功能对象，便于获取功能点
         res.data.forEach(menu => {
-          ids.push(menu.menuId)
-          if (actionMap[menu.menuId] === undefined) {
-            actionMap[menu.menuId] = []
+          const menuKey = menu.menuKey
+          menuKeys.push(menuKey)
+          if (actionMap[menuKey] === undefined) {
+            actionMap[menuKey] = []
           }
-          actionMap[menu.menuId].push(menu.actionKey)
+          actionMap[menuKey].push(menu.actionKey)
         })
-        this.menus = this.menuTreeOpt(ids, actionMap, _.cloneDeep(this.allMenus))
+        this.menus = this.menuTreeOpt(menuKeys, actionMap, _.cloneDeep(this.allMenus))
         this.menuFormVisible = true
         setTimeout(function() {
-          that.$refs.menuTree.setCheckedKeys(ids)
+          that.$refs.menuTree.setCheckedKeys(menuKeys)
         }, 100)
       })
     },
     // 过滤隐藏的菜单、给菜单添加title属性、过滤目录菜单id
-    menuTreeOpt: function(ids, actionMap, menus) {
+    menuTreeOpt: function(menuKeys, actionMap, menus) {
       const accessedRouters = menus.filter(route => {
         if (route.meta && route.meta.title) {
           route.title = route.meta.title
         }
         if (route.hidden === undefined || !route.hidden) {
           if (route.children && route.children.length) {
-            const index = ids.indexOf(route.name)
+            const index = menuKeys.indexOf(route.name)
             if (index >= 0) {
-              ids.splice(index, 1)
+              menuKeys.splice(index, 1)
             }
-            route.children = this.menuTreeOpt(ids, actionMap, route.children)
+            route.children = this.menuTreeOpt(menuKeys, actionMap, route.children)
           } else {
             if (route.action) {
               route.actionkeys = actionMap[route.name] === undefined ? [] : actionMap[route.name]
