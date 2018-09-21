@@ -88,6 +88,29 @@ export const asyncRouterMap = [
     }]
   },
   {
+    path: '/code',
+    component: Layout,
+    redirect: '/code/warehouse',
+    name: 'code',
+    meta: { title: '辅助资料', icon: 'component' },
+    children: [{
+      path: 'warehouse',
+      component: _import('code/warehouse'),
+      name: 'code_warehouse',
+      meta: { title: '仓库', noCache: true }
+    }, {
+      path: 'accountPeriod',
+      component: _import('code/accountPeriod'),
+      name: 'code_accountPeriod',
+      meta: { title: '账期类型', noCache: true }
+    }, {
+      path: 'code',
+      component: _import('code/code'),
+      name: 'code_code',
+      meta: { title: '字典', noCache: true }
+    }]
+  },
+  {
     path: '/console',
     component: Layout,
     redirect: '/console/user',
@@ -120,22 +143,6 @@ export const asyncRouterMap = [
         name: '分配权限', key: 'assignMenus'
       }, {
         name: '授权用户', key: 'assignUsers'
-      }]
-    }, {
-      path: 'code',
-      component: _import('console/code'),
-      name: 'console_code',
-      meta: { title: '字典', noCache: true },
-      action: [{
-        name: '新增字典', key: 'addCode'
-      }, {
-        name: '删除字典', key: 'removeCode'
-      }, {
-        name: '新增字典项目', key: 'addItem'
-      }, {
-        name: '编辑字典项目', key: 'editItem'
-      }, {
-        name: '删除字典项目', key: 'removeItem'
       }]
     }, {
       path: 'optlog',

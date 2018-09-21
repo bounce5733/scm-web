@@ -18,7 +18,9 @@ export const ERROR_TIP_TITLE = '错误'
 
 export const TIP_DURATION_TIME = 3 * 1000
 
-// 超级管理员key
-export const SUPER_ADMIN_KEY = 'super_admin'
-
 export const CONSOLE_API_BASE = 'http://localhost:9111'
+
+export const BASE64_IMG_PREFIX = 'data:image/jpg;base64,'
+
+// 超级管理员ID（系统固定）
+export const SUPER_ADMIN_ROLEID = 0

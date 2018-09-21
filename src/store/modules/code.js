@@ -1,4 +1,4 @@
-import { cacheMap, cachePathMap } from '@/api/console/code'
+import { cacheMap, cachePathMap } from '@/api/code/code'
 
 const codes = {
   state: {

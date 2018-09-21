@@ -68,6 +68,13 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="密码" prop="password">
+              <el-input type="password" v-model="registerInfo.password"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click.native="cancelRegister">取消</el-button>
@@ -80,14 +87,28 @@
 <script>
 import { SUCCESS_TIP_TITLE, WARNING_TIP_TITLE } from '@/utils/constant'
 import { register } from '@/api/console/sys'
+import { validateMobile, validatePassword } from '@/utils/validate'
 
 export default {
   data() {
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 3) {
-        callback(new Error('密码不能少于3位！'))
-      } else {
+    const checkPassword = (rule, value, callback) => {
+      if (value !== undefined && value !== '') {
+        if (!validatePassword(value)) {
+          callback(new Error('密码必须6-20位，由英文字母或数字组成'))
+        }
         callback()
+      } else {
+        return callback(new Error('密码不能为空'))
+      }
+    }
+    const checkMobile = (rule, value, callback) => {
+      if (value !== undefined && value !== '') {
+        if (!validateMobile(value)) {
+          return callback(new Error('手机号码格式不正确'))
+        }
+        callback()
+      } else {
+        return callback(new Error('手机号码不能为空'))
       }
     }
     return {
@@ -98,7 +119,7 @@ export default {
       },
       loginRules: {
         account: [{ required: true, trigger: 'blur', message: '账号不能为空' }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        password: [{ required: true, trigger: 'blur', message: '密码不能为空' }]
       },
       // 注册
       registerTitle: '注册账号',
@@ -118,8 +139,10 @@ export default {
           { max: 30, message: '最大长度30个字符', trigger: 'blur' }
         ],
         mobile: [
-          { required: true, trigger: 'blur', message: '手机不能为空' },
-          { max: 11, message: '最大长度11个字符', trigger: 'blur' }
+          { required: true, trigger: 'blur', validator: checkMobile }
+        ],
+        password: [
+          { required: true, trigger: 'blur', validator: checkPassword }
         ]
       }
     }

@@ -4,14 +4,14 @@
       <el-col :span="12">
         <el-form @submit.native.prevent :inline="true">
           <el-form-item>
-            <el-button type="primary" :disabled="!actions.includes('addCode')" size="small" @click="openCodeAdd">新增</el-button>
+            <el-button type="primary" size="small" @click="openCodeAdd">新增</el-button>
           </el-form-item>
         </el-form>
         <el-table :data="codes" @row-click="showItem" highlight-current-row stripe border style="width: 100%;">
           <el-table-column label="操作" width="78">
             <template slot-scope="scope">
               <el-button-group>
-                <el-button type="danger" size="small" :disabled="!actions.includes('removeCode')" @click="removeCode(scope.row.code)">删除</el-button>
+                <el-button type="danger" size="small" @click="removeCode(scope.row.code)">删除</el-button>
               </el-button-group>
             </template>
           </el-table-column>
@@ -22,15 +22,15 @@
       <el-col :span="12">
         <el-form @submit.native.prevent :inline="true">
           <el-form-item>
-            <el-button type="primary" :disabled="code.code === undefined || !actions.includes('addItem')" @click="openItemAdd" size="small">新增</el-button>
+            <el-button type="primary" :disabled="code.code === undefined" @click="openItemAdd" size="small">新增</el-button>
           </el-form-item>
         </el-form>
         <el-table :data="code.items" highlight-current-row border style="width: 100%;">
           <el-table-column align="center" label="操作" width="150">
             <template slot-scope="scope">
               <el-button-group>
-                <el-button type="primary" @click="openItemEdit(scope.$index, scope.row)" :disabled="!actions.includes('editItem')" size="small">编辑</el-button>
-                <el-button type="danger" @click="removeItem(scope.$index, scope.row)" :disabled="!actions.includes('removeItem')" size="small">删除</el-button>
+                <el-button type="primary" @click="openItemEdit(scope.$index, scope.row)" size="small">编辑</el-button>
+                <el-button type="danger" @click="removeItem(scope.$index, scope.row)" size="small">删除</el-button>
               </el-button-group>
             </template>
           </el-table-column>
@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import { loadCode, addCode, cacheMap, cachePathMap, removeCode, addItem, editItem, removeItem } from '@/api/console/code'
+import { loadCode, addCode, cacheMap, cachePathMap, removeCode, addItem, editItem, removeItem } from '@/api/code/code'
 import { SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, SUCCESS_TIP_TITLE, WARNING_TIP_TITLE } from '@/utils/constant'
 
 export default {
@@ -127,7 +127,6 @@ export default {
     }
 
     return {
-      actions: this.$store.state.permission.menus[this.$route.name],
       codes: [],
       code: {}, // 当前选中字典
       // ------新增类型------

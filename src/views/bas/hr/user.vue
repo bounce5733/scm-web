@@ -3,22 +3,22 @@
     <el-row :gutter="20">
       <el-col :span="12">
         <el-form @submit.native.prevent :inline="true">
-            <el-form-item>
-              <el-button type="primary" :disabled="!actions.includes('addUser')" size="small" @click="openAdd">新增</el-button>
-            </el-form-item>
-          </el-form>
-          <el-table :data="users" @row-click="selUser" border style="width: 100%;">
-            <el-table-column label="操作" width="150">
-              <template slot-scope="scope">
-                <el-button-group>
-                  <el-button type="primary" size="small" :disabled="!actions.includes('editUser')" @click="openEdit(scope.row)">编辑</el-button>
-                  <el-button type="danger" size="small" :disabled="!actions.includes('removeUser')" @click="remove(scope.row.id)">删除</el-button>
-                </el-button-group>
-              </template>
-            </el-table-column>
-            <el-table-column prop="name" label="姓名" width="160" sortable></el-table-column>
-            <el-table-column prop="account" label="账号" sortable></el-table-column>
-          </el-table>
+          <el-form-item>
+            <el-button type="primary" :disabled="!actions.includes('addUser')" size="small" @click="openAdd">新增</el-button>
+          </el-form-item>
+        </el-form>
+        <el-table :data="users" @row-click="selUser" border style="width: 100%;">
+          <el-table-column label="操作" width="150">
+            <template slot-scope="scope">
+              <el-button-group>
+                <el-button type="primary" size="small" :disabled="!actions.includes('editUser')" @click="openEdit(scope.row)">编辑</el-button>
+                <el-button type="danger" size="small" :disabled="!actions.includes('removeUser')" @click="remove(scope.row.id)">删除</el-button>
+              </el-button-group>
+            </template>
+          </el-table-column>
+          <el-table-column prop="name" label="姓名" width="160" sortable></el-table-column>
+          <el-table-column prop="account" label="账号" sortable></el-table-column>
+        </el-table>
       </el-col>
       <el-col :span="12">
         <el-container>

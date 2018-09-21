@@ -12,13 +12,13 @@
 
     <!--列表-->
     <el-table :data="roles" highlight-current-row border style="width: 100%;">
-      <el-table-column label="操作" align="center" width="250">
+      <el-table-column label="操作" align="center" width="290">
         <template slot-scope="scope">
           <el-button-group>
-            <el-button type="primary" size="small" :disabled="!actions.includes('assignMenus')" @click="openAssignMenus(scope.$index, scope.row)">分配权限</el-button>
             <el-button type="primary" size="small" :disabled="!actions.includes('assignUsers')" @click="openAssignUsers(scope.$index, scope.row)">授权用户</el-button>
-            <el-button type="primary" size="small" :disabled="!actions.includes('editRole')" v-if="scope.row.name != superAdminKey" @click="openEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button type="danger" v-if="scope.row.name != superAdminKey" :disabled="!actions.includes('removeRole')" size="small" @click="remove(scope.row)">删除</el-button>
+            <el-button type="primary" size="small" :disabled="!actions.includes('assignMenus')" @click="openAssignMenus(scope.$index, scope.row)">分配权限</el-button>
+            <el-button type="primary" size="small" :disabled="!actions.includes('editRole') || scope.row.id === superAdminRoleId" @click="openEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button type="danger" :disabled="!actions.includes('removeRole') || scope.row.id === superAdminRoleId" size="small" @click="remove(scope.row)">删除</el-button>
           </el-button-group>
         </template>
       </el-table-column>
@@ -125,7 +125,7 @@
 import { loadRole, addRole, editRole, removeRole, assignUsers, assignMenus } from '@/api/console/role'
 import { matchUserWithAccountOrName, roleUsers } from '@/api/console/user'
 import { roleMenus } from '@/api/console/role'
-import { SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, SUCCESS_TIP_TITLE, WARNING_TIP_TITLE, SUPER_ADMIN_KEY } from '@/utils/constant'
+import { SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, SUCCESS_TIP_TITLE, WARNING_TIP_TITLE, SUPER_ADMIN_ROLEID } from '@/utils/constant'
 import { asyncRouterMap } from '@/router'
 import _ from 'lodash/lang'
 
@@ -161,7 +161,7 @@ export default {
     return {
       actions: this.$store.state.permission.menus[this.$route.name],
       checkboxGroup6: [],
-      superAdminKey: SUPER_ADMIN_KEY,
+      superAdminRoleId: SUPER_ADMIN_ROLEID,
       roles: [],
       // ------编辑角色------
       formVisible: false,

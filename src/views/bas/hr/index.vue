@@ -24,7 +24,6 @@ export default {
   },
   methods: {
     tabChange: function(tab, event) {
-      
     }
   }
 }

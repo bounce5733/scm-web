@@ -36,3 +36,30 @@ export function validateEmail(email) {
   return re.test(email)
 }
 
+export function validatePostcode(postcode) {
+  const reg = /^[0-9]{6}$/
+  return reg.test(postcode)
+}
+
+export function validateMobile(mobile) {
+  const reg = /^1[3|4|5|7|8][0-9]{9}$/
+  return reg.test(mobile)
+}
+
+export function validateQQ(qq) {
+  const reg = /^\s*[.0-9]{5,11}\s*$/
+  return reg.test(qq)
+}
+
+export function validateTel(tel) {
+  const reg = /^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/
+  return reg.test(tel)
+}
+
+export function validatePassword(pwd) {
+  if (pwd.length >= 6 && pwd.length <= 20 && (pwd.match(/[\da-zA-Z]+/) || pwd.match(/\d+/))) {
+    return true
+  }
+  return false
+}
+
