@@ -196,8 +196,8 @@ export default {
         'X-Auth-Token': sessionStorage.getItem(TOKEN_KEY)
       },
       avatar: '',
-      industryCategorys: this.$store.state.code.codeMap.industry_category === undefined ? [] : this.$store.state.code.codeMap.industry_category,
-      areas: this.$store.state.code.codeMap.area === undefined ? [] : this.$store.state.code.codeMap.area,
+      industryCategorys: this.$store.state.code.sysCode.industry_category === undefined ? [] : this.$store.state.code.sysCode.industry_category,
+      areas: this.$store.state.code.sysCode.area === undefined ? [] : this.$store.state.code.sysCode.area,
       company: {},
       companyRules: {
         name: [
@@ -259,7 +259,7 @@ export default {
       getCompany(id).then(res => {
         this.company = res.data
         this.company.industryCategory = this.company.industryCategory === 0 ? [] : [this.company.industryCategory]
-        this.company.area = this.company.area === 0 ? [] : this.$store.state.code.codePathMap[this.company.area].path
+        this.company.area = this.company.area === 0 ? [] : this.$store.state.code.sysPathCode[this.company.area].path
         this.avatar = this.company.avatar === '' ? '' : BASE64_IMG_PREFIX + this.company.avatar
       })
     },

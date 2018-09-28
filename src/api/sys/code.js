@@ -29,6 +29,13 @@ export function loadProductCatalogPathCode() {
   })
 }
 
+export function loadCode() {
+  return request({
+    url: SCM_API_BASE + '/sys/codes',
+    method: 'get'
+  })
+}
+
 export function addCode(data) {
   return request({
     url: SCM_API_BASE + '/sys/codes',

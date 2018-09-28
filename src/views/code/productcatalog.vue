@@ -99,7 +99,7 @@ export default {
         this.products = res.data
         this.products.forEach(item => {
           let indent = ''
-          const depth = this.$store.state.code.codePathMap[item.id].path.length - 1
+          const depth = this.$store.state.code.sysPathCode[item.id].path.length - 1
           for (let i = 0; i < depth; i++) {
             indent += '- - '
           }
@@ -114,15 +114,15 @@ export default {
     openAdd: function() {
       this.formTitle = '新增'
       this.formVisible = true
-      this.pcodes = this.$store.state.code.codes[this.code.code] === undefined ? [] : this.$store.state.code.codes[this.code.code]
+      this.pcodes = this.$store.state.code.sysCodes[this.code.code] === undefined ? [] : this.$store.state.code.sysCodes[this.code.code]
     },
     openEdit: function(index, row) {
       this.product = Object.assign({}, row)
       this.formTitle = '编辑'
-      const path = this.$store.state.code.codePathMap[row.id].path
+      const path = this.$store.state.code.sysPathCode[row.id].path
       path.splice(-1, 1)
       this.product.path = path
-      this.pcodes = this.$store.state.code.codes[this.code.code] === undefined ? [] : this.$store.state.code.codes[this.code.code]
+      this.pcodes = this.$store.state.code.sysCodes[this.code.code] === undefined ? [] : this.$store.state.code.sysCodes[this.code.code]
       this.formVisible = true
     },
     save: function() {

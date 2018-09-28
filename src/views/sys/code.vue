@@ -7,7 +7,7 @@
             <el-button type="primary" :disabled="!actions.includes('addCode')" size="small" @click="openCodeAdd">新增</el-button>
           </el-form-item>
         </el-form>
-        <el-table :data="codeMap.prototype.values()" @row-click="showItem" highlight-current-row stripe border style="width: 100%;">
+        <el-table :data="codes" @row-click="showItem" highlight-current-row stripe border style="width: 100%;">
           <el-table-column label="操作" width="78">
             <template slot-scope="scope">
               <el-button-group>
@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import { loadSysCode, loadSysPathCode, addCode, removeCode, addItem, editItem, removeItem } from '@/api/sys/code'
+import { loadCode, loadSysCode, loadSysPathCode, addCode, removeCode, addItem, editItem, removeItem } from '@/api/sys/code'
 import { SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, SUCCESS_TIP_TITLE, WARNING_TIP_TITLE } from '@/utils/constant'
 
 export default {
@@ -128,7 +128,7 @@ export default {
 
     return {
       actions: this.$store.state.permission.menus[this.$route.name],
-      codeMap: {},
+      codes: [], // 系统字典列表
       code: {}, // 当前选中字典
       // ------新增类型------
       codeFormVisible: false,
@@ -162,20 +162,19 @@ export default {
   },
   methods: {
     loadCode: function() {
-      loadSysCode().then(res => {
-        this.codeMap = res.data
-        this.code = this.code.code === undefined ? this.codes[0] : this.code
-        for (const key in this.codeMap) {
+      loadCode().then(res => {
+        this.codes = res.data
+        this.codes.forEach(code => {
           if (this.code.code === undefined) { // 首次进入默认选择第一个
-            this.code = this.codeMap[key]
+            this.code = code
           } else { // 已经选中过则重新赋最新值
-            if (this.code.code === this.codeMap[key].code) {
-              this.code = this.codeMap[key]
+            if (this.code.code === code.code) {
+              this.code = code
             }
           }
-          this.codeMap[key].items.forEach(item => {
+          code.items.forEach(item => {
             let indent = ''
-            const depth = this.$store.state.code.codePathMap[item.id].path.length - 1
+            const depth = this.$store.state.code.sysPathCode[item.id].path.length - 1
             for (let i = 0; i < depth; i++) {
               indent += '- - '
             }
@@ -185,14 +184,14 @@ export default {
               item.showName = item.name
             }
           })
-        }
+        })
       })
     },
     showItem: function(row, event, column) {
       this.code = row
       this.code.items.forEach(item => {
         let indent = ''
-        const depth = this.$store.state.code.codePathMap[item.id].path.length - 1
+        const depth = this.$store.state.code.sysPathCode[item.id].path.length - 1
         for (let i = 0; i < depth; i++) {
           indent += '- - '
         }
@@ -259,15 +258,15 @@ export default {
       this.itemFormTitle = '新增'
       this.itemFormVisible = true
       this.item.sort = this.code.items.length + 1
-      this.pcodes = this.$store.state.code.codes[this.code.code] === undefined ? [] : this.$store.state.code.codes[this.code.code]
+      this.pcodes = this.$store.state.code.sysCode[this.code.code] === undefined ? [] : this.$store.state.code.sysCode[this.code.code]
     },
     openItemEdit: function(index, row) {
       this.item = Object.assign({}, row)
       this.itemFormTitle = '编辑'
-      const path = this.$store.state.code.codePathMap[row.id].path
+      const path = this.$store.state.code.sysPathCode[row.id].path
       path.splice(-1, 1)
       this.item.path = path
-      this.pcodes = this.$store.state.code.codes[this.code.code] === undefined ? [] : this.$store.state.code.codes[this.code.code]
+      this.pcodes = this.$store.state.code.sysCode[this.code.code] === undefined ? [] : this.$store.state.code.sysCode[this.code.code]
       this.itemFormVisible = true
     },
     saveItem: function() {

@@ -65,7 +65,7 @@ const user = {
 
           // ------加载码表------
           store.dispatch('loadSysCode')
-          store.dispatch('loadSysCodePath')
+          store.dispatch('loadSysPathCode')
           store.dispatch('loadAppCode')
           store.dispatch('loadProductCatalogPathCode')
 
