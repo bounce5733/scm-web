@@ -1,9 +1,9 @@
 import request from '@/utils/request'
-import { CONSOLE_API_BASE } from '@/utils/constant'
+import { SCM_API_BASE } from '@/utils/constant'
 
-export function queryByPage(optType, isme, startTime, endTime, params) {
+export function queryOptlogByPage(optType, isme, startTime, endTime, params) {
   return request({
-    url: CONSOLE_API_BASE + '/optlogs',
+    url: SCM_API_BASE + '/sys/optlogs',
     method: 'get',
     params: {
       optType: optType,

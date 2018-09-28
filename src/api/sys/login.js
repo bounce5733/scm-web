@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { CONSOLE_API_BASE } from '@/utils/constant'
+import { SCM_API_BASE } from '@/utils/constant'
 
 export function loginByAccount(account, password) {
   const data = {
@@ -7,7 +7,7 @@ export function loginByAccount(account, password) {
     pwd: password
   }
   return request({
-    url: CONSOLE_API_BASE + '/sys/login',
+    url: SCM_API_BASE + '/sys/login',
     method: 'post',
     data
   })
@@ -15,7 +15,7 @@ export function loginByAccount(account, password) {
 
 export function cacheAction(actions) {
   return request({
-    url: CONSOLE_API_BASE + '/sys/action',
+    url: SCM_API_BASE + '/sys/login/action',
     method: 'post',
     data: actions
   })
@@ -23,7 +23,7 @@ export function cacheAction(actions) {
 
 export function register(info) {
   return request({
-    url: CONSOLE_API_BASE + '/sys/register',
+    url: SCM_API_BASE + '/sys/login/register',
     method: 'post',
     data: info
   })
@@ -31,7 +31,7 @@ export function register(info) {
 
 export function logout() {
   return request({
-    url: CONSOLE_API_BASE + '/sys/logout',
+    url: SCM_API_BASE + '/sys/login/logout',
     method: 'get'
   })
 }

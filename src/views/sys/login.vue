@@ -86,7 +86,7 @@
 
 <script>
 import { SUCCESS_TIP_TITLE, WARNING_TIP_TITLE } from '@/utils/constant'
-import { register } from '@/api/console/sys'
+import { register } from '@/api/sys/login'
 import { validateMobile, validatePassword } from '@/utils/validate'
 
 export default {

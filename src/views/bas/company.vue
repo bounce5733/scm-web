@@ -126,7 +126,7 @@
 </template>
 
 <script>
-import { CONSOLE_API_BASE, TOKEN_KEY, SAVE_SUCCESS, SUCCESS_TIP_TITLE, BASE64_IMG_PREFIX } from '@/utils/constant'
+import { SCM_API_BASE, TOKEN_KEY, SAVE_SUCCESS, SUCCESS_TIP_TITLE, BASE64_IMG_PREFIX } from '@/utils/constant'
 import { getCompany, editCompany } from '@/api/bas/company'
 import { validatePostcode, validateEmail, validateMobile, validateQQ, validateTel, validateURL } from '@/utils/validate'
 
@@ -191,13 +191,13 @@ export default {
         value: 'id',
         children: 'children'
       },
-      companyAvatarAction: CONSOLE_API_BASE + '/attachs/companyAvatar',
+      companyAvatarAction: SCM_API_BASE + '/sys/attachs/companyAvatar',
       companyAvatarHeader: {
         'X-Auth-Token': sessionStorage.getItem(TOKEN_KEY)
       },
       avatar: '',
-      industryCategorys: this.$store.state.code.codes.industry_category === undefined ? [] : this.$store.state.code.codes.industry_category,
-      areas: this.$store.state.code.codes.area === undefined ? [] : this.$store.state.code.codes.area,
+      industryCategorys: this.$store.state.code.codeMap.industry_category === undefined ? [] : this.$store.state.code.codeMap.industry_category,
+      areas: this.$store.state.code.codeMap.area === undefined ? [] : this.$store.state.code.codeMap.area,
       company: {},
       companyRules: {
         name: [

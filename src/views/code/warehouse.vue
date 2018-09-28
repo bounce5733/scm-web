@@ -4,7 +4,7 @@
       <el-col :span="2" :offset="22">
         <el-form @submit.native.prevent>
           <el-form-item>
-            <el-button type="primary" size="small" @click="openAdd">新增</el-button>
+            <el-button type="primary" size="small" :disabled="!actions.includes('addWarehouse')" @click="openAdd">新增</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -17,17 +17,17 @@
         </el-table-column>
         <el-table-column prop="code" label="仓库编码" sortable></el-table-column>
         <el-table-column prop="address" label="仓库地址" sortable></el-table-column>
-        <el-table-column prop="disabled" :formatter="formatterDisabledCol" label="状态" sortable></el-table-column>
+        <el-table-column prop="enabled" :formatter="formatterEnabledCol" label="状态" sortable></el-table-column>
         <el-table-column label="操作" align="center" width="60">
           <template slot-scope="scope">
             <el-dropdown placement="bottom" @command="handleAction" @visible-change="warehouse = Object.assign({}, scope.row)">
               <i class="el-icon-more"></i>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="edit"><i class="el-icon-edit"></i>&nbsp;修改</el-dropdown-item>
-                <el-dropdown-item v-if="scope.row.disabled === 'F'" command="disable" divided><i class="el-icon-remove"></i>&nbsp;禁用</el-dropdown-item>
-                <el-dropdown-item v-else command="enable" divided><i class="el-icon-circle-check"></i>&nbsp;启用</el-dropdown-item>
-                <el-dropdown-item command="remove" divided><i class="el-icon-delete"></i>&nbsp;删除</el-dropdown-item>
-                <el-dropdown-item v-if="scope.row.defaulted === 'F'" command="setDefault" divided><i class="el-icon-setting"></i>&nbsp;设置为默认仓库</el-dropdown-item>
+                <el-dropdown-item command="edit" :disabled="!actions.includes('editWarehouse')"><i class="el-icon-edit"></i>&nbsp;修改</el-dropdown-item>
+                <el-dropdown-item v-if="scope.row.enabled === 'T'" :disabled="!actions.includes('enableWarehouse')" command="disable" divided><i class="el-icon-remove"></i>&nbsp;禁用</el-dropdown-item>
+                <el-dropdown-item v-else command="enable" :disabled="!actions.includes('enableWarehouse')" divided><i class="el-icon-circle-check"></i>&nbsp;启用</el-dropdown-item>
+                <el-dropdown-item command="remove" :disabled="!actions.includes('removeWarehouse')"  divided><i class="el-icon-delete"></i>&nbsp;删除</el-dropdown-item>
+                <el-dropdown-item v-if="scope.row.defaulted === 'F'" :disabled="!actions.includes('setDefaultWarehouse')" command="setDefault" divided><i class="el-icon-setting"></i>&nbsp;设置为默认仓库</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </template>
@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { loadWarehouse, addWarehouse, editWarehouse, removeWarehouse, setDefaultWarehouse } from '@/api/code/warehouse'
+import { loadWarehouse, addWarehouse, editWarehouse, removeWarehouse, setDefaultWarehouse, enableWarehouse } from '@/api/code/warehouse'
 import { SUCCESS_TIP_TITLE, WARNING_TIP_TITLE, SAVE_SUCCESS, REMOVE_SUCCESS } from '@/utils/constant'
 
 export default {
@@ -90,6 +90,7 @@ export default {
     }
 
     return {
+      actions: this.$store.state.permission.menus[this.$route.name],
       warehouses: [],
       // ------仓库编辑------
       warehouse: {},
@@ -130,14 +131,14 @@ export default {
               type: 'warning'
             })
           } else {
-            this.changeStatus('T')
+            this.changeStatus('F')
           }
           break
         case 'setDefault':
           this.setDefault()
           break
         case 'enable':
-          this.changeStatus('F')
+          this.changeStatus('T')
           break
         case 'remove':
           if (this.warehouse.defaulted === 'T') {
@@ -191,9 +192,9 @@ export default {
       })
     },
     changeStatus: function(status) {
-      const tip = status === 'T' ? '是否确认禁用此仓库，特别提醒: 作废仓库不会清空仓库库存' : '是否确认启用此仓库'
+      const tip = status === 'F' ? '是否确认禁用此仓库，特别提醒: 作废仓库不会清空仓库库存' : '是否确认启用此仓库'
       this.$confirm(tip, '提示', { type: 'warning' }).then(() => {
-        editWarehouse(Object.assign({}, { id: this.warehouse.id, disabled: status })).then(res => {
+        enableWarehouse(this.warehouse.id, status).then(res => {
           this.$notify({
             title: SUCCESS_TIP_TITLE,
             message: '仓库状态修改成功',
@@ -231,8 +232,8 @@ export default {
       this.$refs.warehouseForm.resetFields()
       this.formVisible = false
     },
-    formatterDisabledCol: function(row, column, cellValue, index) {
-      return cellValue === 'F' ? '已启用' : '未启用'
+    formatterEnabledCol: function(row, column, cellValue, index) {
+      return cellValue === 'T' ? '已启用' : '未启用'
     }
   },
   mounted() {

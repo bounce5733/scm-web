@@ -39,4 +39,9 @@ export default {
   fill: currentColor;
   overflow: hidden;
 }
+
+.svn-icon-header {
+  width: 1.5em;
+  height: 1.5em;
+}
 </style>

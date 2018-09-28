@@ -4,14 +4,14 @@
       <el-col :span="12">
         <el-form @submit.native.prevent :inline="true">
           <el-form-item>
-            <el-button type="primary" size="small" @click="openCodeAdd">新增</el-button>
+            <el-button type="primary" :disabled="!actions.includes('addCode')" size="small" @click="openCodeAdd">新增</el-button>
           </el-form-item>
         </el-form>
-        <el-table :data="codes" @row-click="showItem" highlight-current-row stripe border style="width: 100%;">
+        <el-table :data="codeMap.prototype.values()" @row-click="showItem" highlight-current-row stripe border style="width: 100%;">
           <el-table-column label="操作" width="78">
             <template slot-scope="scope">
               <el-button-group>
-                <el-button type="danger" size="small" @click="removeCode(scope.row.code)">删除</el-button>
+                <el-button type="danger" size="small" :disabled="!actions.includes('removeCode')" @click="removeCode(scope.row.code)">删除</el-button>
               </el-button-group>
             </template>
           </el-table-column>
@@ -22,15 +22,15 @@
       <el-col :span="12">
         <el-form @submit.native.prevent :inline="true">
           <el-form-item>
-            <el-button type="primary" :disabled="code.code === undefined" @click="openItemAdd" size="small">新增</el-button>
+            <el-button type="primary" :disabled="code.code === undefined || !actions.includes('addCodeItem')" @click="openItemAdd" size="small">新增</el-button>
           </el-form-item>
         </el-form>
         <el-table :data="code.items" highlight-current-row border style="width: 100%;">
           <el-table-column align="center" label="操作" width="150">
             <template slot-scope="scope">
               <el-button-group>
-                <el-button type="primary" @click="openItemEdit(scope.$index, scope.row)" size="small">编辑</el-button>
-                <el-button type="danger" @click="removeItem(scope.$index, scope.row)" size="small">删除</el-button>
+                <el-button type="primary" :disabled="!actions.includes('editCodeItem')" @click="openItemEdit(scope.$index, scope.row)" size="small">编辑</el-button>
+                <el-button type="danger" :disabled="!actions.includes('removeCodeItem')" @click="removeItem(scope.$index, scope.row)" size="small">删除</el-button>
               </el-button-group>
             </template>
           </el-table-column>
@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import { loadCode, addCode, cacheMap, cachePathMap, removeCode, addItem, editItem, removeItem } from '@/api/code/code'
+import { loadSysCode, loadSysPathCode, addCode, removeCode, addItem, editItem, removeItem } from '@/api/sys/code'
 import { SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, SUCCESS_TIP_TITLE, WARNING_TIP_TITLE } from '@/utils/constant'
 
 export default {
@@ -127,7 +127,8 @@ export default {
     }
 
     return {
-      codes: [],
+      actions: this.$store.state.permission.menus[this.$route.name],
+      codeMap: {},
       code: {}, // 当前选中字典
       // ------新增类型------
       codeFormVisible: false,
@@ -161,14 +162,18 @@ export default {
   },
   methods: {
     loadCode: function() {
-      loadCode().then(res => {
-        this.codes = res.data
+      loadSysCode().then(res => {
+        this.codeMap = res.data
         this.code = this.code.code === undefined ? this.codes[0] : this.code
-        this.codes.forEach(code => {
-          if (this.code.code === code.code) {
-            this.code = code
+        for (const key in this.codeMap) {
+          if (this.code.code === undefined) { // 首次进入默认选择第一个
+            this.code = this.codeMap[key]
+          } else { // 已经选中过则重新赋最新值
+            if (this.code.code === this.codeMap[key].code) {
+              this.code = this.codeMap[key]
+            }
           }
-          code.items.forEach(item => {
+          this.codeMap[key].items.forEach(item => {
             let indent = ''
             const depth = this.$store.state.code.codePathMap[item.id].path.length - 1
             for (let i = 0; i < depth; i++) {
@@ -180,7 +185,7 @@ export default {
               item.showName = item.name
             }
           })
-        })
+        }
       })
     },
     showItem: function(row, event, column) {
@@ -346,10 +351,10 @@ export default {
     },
     refreshCodeStore: function() {
       // ------刷新码表------
-      cacheMap().then(res => {
-        this.$store.commit('ADD_CODES', res.data)
-        cachePathMap().then(res => {
-          this.$store.commit('ADD_PATH_MAP', res.data)
+      loadSysCode().then(res => {
+        this.$store.commit('ADD_SYS_CODE', res.data)
+        loadSysPathCode().then(res => {
+          this.$store.commit('ADD_SYS_PATH_CODE', res.data)
           this.loadCode()
         })
       })

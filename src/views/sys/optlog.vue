@@ -26,19 +26,20 @@
         </el-form-item>
       </el-form>
     </el-row>
-    <el-table :data="logs" @sort-change="sorData" border style="width: 100%;">
+    <el-table :data="logs" @sort-change="sortData" border style="width: 100%;">
       <el-table-column prop="userName" label="操作人" width="100" sortable></el-table-column>
       <el-table-column prop="createdTime" label="时间" width="160" sortable></el-table-column>
       <el-table-column prop="optType" label="操作类型" width="120" sortable></el-table-column>
       <el-table-column prop="optLog" label="操作日志" sortable></el-table-column>
     </el-table>
-    <el-pagination layout="prev, pager, next" @current-change="pageChange" :page-size="params.pageSize" :total="total" style="float:right;">
+    <el-pagination layout="prev, pager, next" @current-change="pageChange" :current-page="params.pageNum" :page-size="params.pageSize" :total="total" style="float:right;">
     </el-pagination>
  </div>
 </template>
 
 <script>
-import { queryByPage } from '@/api/console/optlog'
+import { queryOptlogByPage } from '@/api/sys/optlog'
+import { parseTime } from '@/utils/index'
 export default {
 
   data() {
@@ -98,7 +99,7 @@ export default {
       if (this.operator === 'all') {
         isme = false
       }
-      queryByPage(this.optType, isme, startTime, endTime, this.params).then(res => {
+      queryOptlogByPage(this.optType, isme, parseTime(startTime), parseTime(endTime), this.params).then(res => {
         this.logs = res.data.list
         this.total = res.data.total
       })
@@ -115,7 +116,7 @@ export default {
       this.params.pageNum = val
       this.queryByPage()
     },
-    sorData: function(sortobj) {
+    sortData: function(sortobj) {
       this.params.order = sortobj.order === null ? '' : sortobj.order === 'ascending' ? 'asc' : 'desc'
       this.queryByPage()
     }

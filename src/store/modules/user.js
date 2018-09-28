@@ -1,4 +1,4 @@
-import { loginByAccount, cacheAction, logout } from '@/api/console/sys'
+import { loginByAccount, cacheAction, logout } from '@/api/sys/login'
 import { getUserInfo } from '@/api/console/user'
 import { TOKEN_KEY, TIP_DURATION_TIME } from '@/utils/constant'
 import { asyncRouterMap } from '@/router'
@@ -64,8 +64,10 @@ const user = {
           }
 
           // ------加载码表------
-          store.dispatch('addCodes')
-          store.dispatch('addCodesPathMap')
+          store.dispatch('loadSysCode')
+          store.dispatch('loadSysCodePath')
+          store.dispatch('loadAppCode')
+          store.dispatch('loadProductCatalogPathCode')
 
           const userinfo = res.data
           const user = userinfo.user

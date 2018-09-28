@@ -6,12 +6,12 @@
     <breadcrumb class="breadcrumb-container"></breadcrumb>
     
     <div class="right-menu">
-      <el-dropdown class="avatar-container right-menu-item" trigger="hover">
+      <el-dropdown class="avatar-container right-menu-item" placement="bottom" :show-timeout="0" :hide-timeout="0" trigger="hover">
         <div class="avatar-wrapper">
-          <span>{{username}}</span>
-          <svg-icon icon-class="admin"></svg-icon>
+          <span>{{username}}</span>&nbsp;
+          <svg-icon class-name="svn-icon-header" icon-class="admin"></svg-icon>
         </div>
-        <el-dropdown-menu slot="dropdown">
+        <el-dropdown-menu placement="bottom" slot="dropdown">
           <router-link to="/">
             <el-dropdown-item>
               <svg-icon icon-class="icon-account"></svg-icon>&nbsp;&nbsp;账号信息
@@ -22,34 +22,35 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-      <el-dropdown class="avatar-container right-menu-item" trigger="hover">
+      <el-dropdown class="avatar-container right-menu-item" placement="bottom" :show-timeout="0" :hide-timeout="0" trigger="hover">
         <div class="avatar-wrapper">
-          <svg-icon icon-class="services"></svg-icon>
+          <svg-icon class-name="svn-icon-header" icon-class="services"></svg-icon>
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/">
             <el-dropdown-item>
-              <svg-icon icon-class="icon-account"></svg-icon>&nbsp;&nbsp;账号信息
+              <svg-icon icon-class="icon-account"></svg-icon>&nbsp;&nbsp;意见反馈
             </el-dropdown-item>
           </router-link>
-          <el-dropdown-item divided>
-            <svg-icon icon-class="icon-account"></svg-icon><span @click="logout">&nbsp;&nbsp;退出</span>
-          </el-dropdown-item>
+          <router-link to="/">
+            <el-dropdown-item>
+              <svg-icon icon-class="icon-account"></svg-icon>&nbsp;&nbsp;在线客服
+            </el-dropdown-item>
+          </router-link>
         </el-dropdown-menu>
       </el-dropdown>
-      <el-dropdown class="avatar-container right-menu-item" trigger="hover">
+      <el-dropdown  class="avatar-container right-menu-item" placement="bottom" :show-timeout="0" :hide-timeout="0" trigger="hover">
         <div class="avatar-wrapper">
-          <svg-icon icon-class="bell"></svg-icon>
+          <svg-icon class-name="svn-icon-header" icon-class="setting"></svg-icon>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/">
-            <el-dropdown-item>
-              <svg-icon icon-class="icon-account"></svg-icon>&nbsp;&nbsp;账号信息
-            </el-dropdown-item>
-          </router-link>
-          <el-dropdown-item divided>
-            <svg-icon icon-class="icon-account"></svg-icon><span @click="logout">&nbsp;&nbsp;退出</span>
-          </el-dropdown-item>
+          <div v-for="(item,index) in permission_routers" :key="item.name" v-if="item.name === 'sys' || item.name === 'code' || item.name === 'bas'">
+            <router-link :to="item.path+'/'+subitem.path" v-for="(subitem,subindex) in item.children" :key="subitem.name">
+              <el-dropdown-item :divided="subindex === 0 ? true : false">
+                {{subitem.meta.title}}
+              </el-dropdown-item>
+            </router-link>
+          </div>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -73,7 +74,8 @@ export default {
   computed: {
     ...mapGetters([
       'sidebar',
-      'username'
+      'username',
+      'permission_routers'
     ])
   },
   methods: {
@@ -128,7 +130,7 @@ export default {
     }
     .avatar-container {
       height: 50px;
-      margin-right: 30px;
+      margin-right: 20px;
       .avatar-wrapper {
         cursor: pointer;
         margin-top: 5px;

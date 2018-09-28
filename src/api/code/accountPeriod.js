@@ -1,16 +1,16 @@
 import request from '@/utils/request'
-import { CONSOLE_API_BASE } from '@/utils/constant'
+import { SCM_API_BASE } from '@/utils/constant'
 
 export function loadAccountPeriod() {
   return request({
-    url: CONSOLE_API_BASE + '/code/accountPeriods',
+    url: SCM_API_BASE + '/code/accountperiods',
     method: 'get'
   })
 }
 
 export function addAccountPeriod(accountPeriod) {
   return request({
-    url: CONSOLE_API_BASE + '/code/accountPeriods',
+    url: SCM_API_BASE + '/code/accountperiods',
     method: 'post',
     data: accountPeriod
   })
@@ -18,7 +18,7 @@ export function addAccountPeriod(accountPeriod) {
 
 export function editAccountPeriod(accountPeriod) {
   return request({
-    url: CONSOLE_API_BASE + '/code/accountPeriods',
+    url: SCM_API_BASE + '/code/accountperiods',
     method: 'patch',
     data: accountPeriod
   })
@@ -26,14 +26,14 @@ export function editAccountPeriod(accountPeriod) {
 
 export function removeAccountPeriod(id) {
   return request({
-    url: CONSOLE_API_BASE + '/code/accountPeriods/' + id,
+    url: SCM_API_BASE + '/code/accountperiods/' + id,
     method: 'delete'
   })
 }
 
 export function moveTopAccountPeriod(id) {
   return request({
-    url: CONSOLE_API_BASE + '/code/accountPeriods/moveTop/' + id,
+    url: SCM_API_BASE + '/code/accountperiods/moveTop/' + id,
     method: 'get'
   })
 }
