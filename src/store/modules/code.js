@@ -1,11 +1,12 @@
-import { loadAppCode, loadSysCode, loadSysPathCode, loadProductCatalogPathCode } from '@/api/sys/code'
+import { loadAppCode, loadSysCode, loadSysPathCode, loadAppCascadeCode, loadAppCascadePathCode } from '@/api/sys/code'
 
 const codes = {
   state: {
     sysCode: [],
     sysPathCode: [],
     appCode: [],
-    productCatalogPathCode: []
+    appCascadeCode: [],
+    appCascadePathCode: []
   },
   mutations: {
     ADD_SYS_CODE(state, code) {
@@ -17,8 +18,11 @@ const codes = {
     ADD_APP_CODE(state, code) {
       state.appCode = code
     },
-    ADD_PRODUCT_CATALOG_PATH_CODE(state, code) {
-      state.productCatalogPathCode = code
+    ADD_APP_CASCADE_CODE(state, code) {
+      state.appCascadeCode = code
+    },
+    ADD_APP_CASCADE_PATH_CODE(state, code) {
+      state.appCascadePathCode = code
     }
   },
   actions: {
@@ -37,9 +41,14 @@ const codes = {
         commit('ADD_APP_CODE', res.data)
       })
     },
-    loadProductCatalogPathCode({ commit }) {
-      loadProductCatalogPathCode().then(res => {
-        commit('ADD_PRODUCT_CATALOG_PATH_CODE', res.data)
+    loadAppCascadeCode({ commit }) {
+      loadAppCascadeCode().then(res => {
+        commit('ADD_APP_CASCADE_CODE', res.data)
+      })
+    },
+    loadAppCascadePathCode({ commit }) {
+      loadAppCascadePathCode().then(res => {
+        commit('ADD_APP_CASCADE_PATH_CODE', res.data)
       })
     }
   }

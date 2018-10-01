@@ -44,7 +44,7 @@
           <svg-icon class-name="svn-icon-header" icon-class="setting"></svg-icon>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <div v-for="(item,index) in permission_routers" :key="item.name" v-if="item.name === 'sys' || item.name === 'code' || item.name === 'bas'">
+          <div v-for="(item,index) in allPermissionRouters" :key="item.name" v-if="item.name === 'sys' || item.name === 'code' || item.name === 'bas'">
             <router-link :to="item.path+'/'+subitem.path" v-for="(subitem,subindex) in item.children" :key="subitem.name">
               <el-dropdown-item :divided="subindex === 0 ? true : false">
                 {{subitem.meta.title}}
@@ -75,7 +75,7 @@ export default {
     ...mapGetters([
       'sidebar',
       'username',
-      'permission_routers'
+      'allPermissionRouters'
     ])
   },
   methods: {

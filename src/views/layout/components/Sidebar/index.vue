@@ -8,9 +8,9 @@
       background-color="#304156"
       text-color="#bfcbd9"
       active-text-color="#409EFF"
-      :default-openeds="menuids"
+      :default-openeds="asyncPermissionMenuKeys"
     >
-      <sidebar-item :routes="permission_routers"></sidebar-item>
+      <sidebar-item :routes="allPermissionRouters"></sidebar-item>
     </el-menu>
 
 </template>
@@ -23,9 +23,9 @@ export default {
   components: { SidebarItem },
   computed: {
     ...mapGetters([
-      'permission_routers',
+      'allPermissionRouters',
       'sidebar',
-      'menuids'
+      'asyncPermissionMenuKeys'
     ]),
     isCollapse() {
       return !this.sidebar.opened

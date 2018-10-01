@@ -22,9 +22,16 @@ export function loadAppCode() {
   })
 }
 
-export function loadProductCatalogPathCode() {
+export function loadAppCascadeCode() {
   return request({
-    url: SCM_API_BASE + '/sys/codes/productCatalogPathCode',
+    url: SCM_API_BASE + '/sys/codes/appCascadeCode',
+    method: 'get'
+  })
+}
+
+export function loadAppCascadePathCode() {
+  return request({
+    url: SCM_API_BASE + '/sys/codes/appCascadePathCode',
     method: 'get'
   })
 }

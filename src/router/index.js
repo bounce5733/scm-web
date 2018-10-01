@@ -110,9 +110,9 @@ export const asyncRouterMap = [
         name: '启停仓库', key: 'enableWarehouse'
       }]
     }, {
-      path: 'productcatalog',
-      component: _import('code/productcatalog'),
-      name: 'code_productcatalog',
+      path: 'productCatalog',
+      component: _import('code/productCatalog'),
+      name: 'code_productCatalog',
       meta: { title: '商品分类', noCache: true },
       action: [{
         name: '新增商品分类', key: 'addProductCatalog'
@@ -124,9 +124,9 @@ export const asyncRouterMap = [
         name: '商品分类置顶', key: 'moveTopProductCatalog'
       }]
     }, {
-      path: 'accountperiod',
-      component: _import('code/accountperiod'),
-      name: 'code_accountperiod',
+      path: 'accountPeriod',
+      component: _import('code/accountPeriod'),
+      name: 'code_accountPeriod',
       meta: { title: '账期类型', noCache: true },
       action: [{
         name: '新增账期', key: 'addAccountPeriod'

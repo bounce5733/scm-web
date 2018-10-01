@@ -126,6 +126,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { SCM_API_BASE, TOKEN_KEY, SAVE_SUCCESS, SUCCESS_TIP_TITLE, BASE64_IMG_PREFIX } from '@/utils/constant'
 import { getCompany, editCompany } from '@/api/bas/company'
 import { validatePostcode, validateEmail, validateMobile, validateQQ, validateTel, validateURL } from '@/utils/validate'
@@ -254,12 +255,18 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'sysCode',
+      'sysPathCode'
+    ])
+  },
   methods: {
     getCompany: function(id) {
       getCompany(id).then(res => {
         this.company = res.data
         this.company.industryCategory = this.company.industryCategory === 0 ? [] : [this.company.industryCategory]
-        this.company.area = this.company.area === 0 ? [] : this.$store.state.code.sysPathCode[this.company.area].path
+        this.company.area = this.company.area === 0 ? [] : this.sysPathCode[this.company.area].path
         this.avatar = this.company.avatar === '' ? '' : BASE64_IMG_PREFIX + this.company.avatar
       })
     },

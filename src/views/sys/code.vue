@@ -96,6 +96,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { loadCode, loadSysCode, loadSysPathCode, addCode, removeCode, addItem, editItem, removeItem } from '@/api/sys/code'
 import { SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, SUCCESS_TIP_TITLE, WARNING_TIP_TITLE } from '@/utils/constant'
 
@@ -160,6 +161,12 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'sysCode',
+      'sysPathCode'
+    ])
+  },
   methods: {
     loadCode: function() {
       loadCode().then(res => {
@@ -174,7 +181,7 @@ export default {
           }
           code.items.forEach(item => {
             let indent = ''
-            const depth = this.$store.state.code.sysPathCode[item.id].path.length - 1
+            const depth = this.sysPathCode[item.id].path.length - 1
             for (let i = 0; i < depth; i++) {
               indent += '- - '
             }
@@ -191,7 +198,7 @@ export default {
       this.code = row
       this.code.items.forEach(item => {
         let indent = ''
-        const depth = this.$store.state.code.sysPathCode[item.id].path.length - 1
+        const depth = this.sysPathCode[item.id].path.length - 1
         for (let i = 0; i < depth; i++) {
           indent += '- - '
         }
@@ -216,7 +223,7 @@ export default {
               message: SAVE_SUCCESS,
               type: 'success'
             })
-            this.refreshCodeStore()
+            this.refreshCache()
             this.cancelCodeForm()
           })
         }
@@ -241,7 +248,7 @@ export default {
                   type: 'success'
                 })
                 this.code = {}
-                this.refreshCodeStore()
+                this.refreshCache()
               })
             }).catch(() => {})
           }
@@ -258,15 +265,15 @@ export default {
       this.itemFormTitle = '新增'
       this.itemFormVisible = true
       this.item.sort = this.code.items.length + 1
-      this.pcodes = this.$store.state.code.sysCode[this.code.code] === undefined ? [] : this.$store.state.code.sysCode[this.code.code]
+      this.pcodes = this.sysCode[this.code.code] === undefined ? [] : this.sysCode[this.code.code]
     },
     openItemEdit: function(index, row) {
       this.item = Object.assign({}, row)
       this.itemFormTitle = '编辑'
-      const path = this.$store.state.code.sysPathCode[row.id].path
+      const path = this.sysPathCode[row.id].path
       path.splice(-1, 1)
       this.item.path = path
-      this.pcodes = this.$store.state.code.sysCode[this.code.code] === undefined ? [] : this.$store.state.code.sysCode[this.code.code]
+      this.pcodes = this.sysCode[this.code.code] === undefined ? [] : this.sysCode[this.code.code]
       this.itemFormVisible = true
     },
     saveItem: function() {
@@ -287,7 +294,7 @@ export default {
               })
               this.$refs.itemForm.resetFields()
               this.item = {}
-              this.refreshCodeStore()
+              this.refreshCache()
               this.itemFormVisible = false
             })
           } else {
@@ -299,7 +306,7 @@ export default {
               })
               this.$refs.itemForm.resetFields()
               this.item = {}
-              this.refreshCodeStore()
+              this.refreshCache()
               this.itemFormVisible = false
             })
           }
@@ -338,7 +345,7 @@ export default {
               message: REMOVE_SUCCESS,
               type: 'success'
             })
-            this.refreshCodeStore()
+            this.refreshCache()
           }
         })
       }).catch(() => {})
@@ -348,8 +355,8 @@ export default {
       this.item = {}
       this.itemFormVisible = false
     },
-    refreshCodeStore: function() {
-      // ------刷新码表------
+    // 刷新缓存
+    refreshCache: function() {
       loadSysCode().then(res => {
         this.$store.commit('ADD_SYS_CODE', res.data)
         loadSysPathCode().then(res => {

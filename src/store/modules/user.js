@@ -56,19 +56,17 @@ const user = {
     },
 
     // 获取用户信息
-    getUserInfo({ commit, state }) {
+    getUserInfo({ commit }) {
       return new Promise((resolve, reject) => {
         getUserInfo().then(res => {
-          if (!res.data) { // 由于mockjs 不支持自定义状态码只能这样hack
-            reject('error')
-          }
-
-          // ------加载码表------
+          // 加载应用字典缓存
           store.dispatch('loadSysCode')
           store.dispatch('loadSysPathCode')
           store.dispatch('loadAppCode')
-          store.dispatch('loadProductCatalogPathCode')
+          store.dispatch('loadAppCascadeCode')
+          store.dispatch('loadAppCascadePathCode')
 
+          // 设置用户信息
           const userinfo = res.data
           const user = userinfo.user
           commit('SET_ACCOUNT', user.account)
