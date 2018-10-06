@@ -1,31 +1,31 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="20">
-      <el-col :span="2" :offset="22">
-        <el-form @submit.native.prevent>
-          <el-form-item>
-            <el-button type="primary" size="small" :disabled="!actions.includes('addAccountPeriod')" @click="openAdd">新增</el-button>
-          </el-form-item>
-        </el-form>
-      </el-col>
-      <el-table :data="accountPeriods" border style="width: 100%;">
-        <el-table-column prop="name" label="账期类型" sortable>
-        </el-table-column>
-        <el-table-column label="操作" align="center" width="60">
-          <template slot-scope="scope">
-            <el-dropdown placement="bottom" @command="handleAction" @visible-change="accountPeriod = Object.assign({}, scope.row)">
-              <i class="el-icon-more"></i>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="edit" :disabled="!actions.includes('editAccountPeriod')"><i class="el-icon-edit"></i>&nbsp;修改</el-dropdown-item>
-                <el-dropdown-item command="moveTop" :disabled="!actions.includes('moveTopAccountPeriod')" divided><i class="el-icon-upload2"></i>&nbsp;置顶</el-dropdown-item>
-                <el-dropdown-item command="remove" :disabled="!actions.includes('removeAccountPeriod')" divided><i class="el-icon-delete"></i>&nbsp;删除</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-row>
-
+    <el-card>
+      <div>
+        <el-row :gutter="20">
+          <el-col :span="2" :offset="22">
+            <el-form @submit.native.prevent>
+              <el-form-item>
+                <el-button type="primary" size="small" :disabled="!actions.includes('addAccountPeriod')" @click="openAdd">新增</el-button>
+              </el-form-item>
+            </el-form>
+          </el-col>
+          <el-table :data="accountPeriods" border style="width: 100%;">
+            <el-table-column prop="name" label="名称" sortable>
+            </el-table-column>
+            <el-table-column label="操作" align="center" width="260">
+              <template slot-scope="scope">
+                <el-button-group>
+                  <el-button type="primary" :disabled="!actions.includes('editAccountPeriod')" icon="el-icon-edit" @click="openEdit(scope.row)" size="small">编辑</el-button>
+                  <el-button type="primary" :disabled="!actions.includes('moveTopAccountPeriod')" icon="el-icon-upload2" @click="moveTop(scope.row.id)" size="small">置顶</el-button>
+                  <el-button type="danger" :disabled="!actions.includes('removeAccountPeriod')" icon="el-icon-remove" @click="remove(scope.row.id)" size="small">删除</el-button>
+                </el-button-group>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-row>
+      </div>
+    </el-card>
     <!--编辑账期-->
     <el-dialog :title="formTitle" width="40%" :close-on-click-modal="false" :visible.sync="formVisible" :show-close="false">
       <el-form :model="accountPeriod" ref="accountPeriodForm" :rules="accountPeriodRules" label-width="80px">
@@ -96,25 +96,14 @@ export default {
         this.accountPeriods = res.data
       })
     },
-    handleAction: function(action) {
-      switch (action) {
-        case 'edit':
-          this.openEdit()
-          break
-        case 'moveTop':
-          this.moveTop()
-          break
-        case 'remove':
-          this.remove()
-      }
-    },
     openAdd: function() {
       this.accountPeriod = {}
       this.formTitle = '新增'
       this.formVisible = true
     },
-    openEdit: function() {
-      this.oldName = this.accountPeriod.name
+    openEdit: function(item) {
+      this.oldName = item.name
+      this.accountPeriod = Object.assign({}, item)
       this.formTitle = '编辑'
       this.formVisible = true
     },
@@ -148,14 +137,14 @@ export default {
         }
       })
     },
-    moveTop: function() {
-      moveTopAccountPeriod(this.accountPeriod.id).then(res => {
+    moveTop: function(id) {
+      moveTopAccountPeriod(id).then(res => {
         this.load()
       })
     },
-    remove: function() {
+    remove: function(id) {
       this.$confirm('确定删除该账期类型', '提示', { type: 'warning' }).then(() => {
-        removeAccountPeriod(this.accountPeriod.id).then(res => {
+        removeAccountPeriod(id).then(res => {
           this.$notify({
             title: SUCCESS_TIP_TITLE,
             message: REMOVE_SUCCESS,
