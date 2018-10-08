@@ -13,14 +13,19 @@
       <el-table-column>
         <template slot-scope="scope">
           <el-row>
-            <el-col :span="18">
-              <span>{{scope.row.showName}}</span>
+            <el-col :span="16">
+              <span v-html="scope.row.indent"></span>
+              <svg-icon :icon-class="scope.row.folderType" class-name="svn-icon-product-catalog"></svg-icon>
+              &nbsp;&nbsp;
+              <span v-if="scope.row.defaulted === 'F'">{{scope.row.name}}</span>
+              <span v-else>{{scope.row.name}}（系统默认，可改名，不可删除）</span>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="8">
               <el-button-group>
-                <el-button type="primary" @click="openAddItem(scope.row)" icon="el-icon-plus" size="small">新增子类</el-button>
-                <el-button type="primary" @click="openEdit(scope.$index, scope.row)" icon="el-icon-edit" size="small">编辑</el-button>
-                <el-button type="danger" @click="remove(scope.$index, scope.row.id)" icon="el-icon-remove" size="small">删除</el-button>
+                <el-button type="primary" :disabled="scope.row.defaulted === 'T'" @click="openAddItem(scope.row)" icon="el-icon-plus" size="small">新增子类</el-button>
+                <el-button type="primary" @click="openEdit(scope.$index, scope.row)" icon="el-icon-edit" size="small">修改</el-button>
+                <el-button type="primary" icon="el-icon-upload2" @click="moveTop(scope.row)" size="small">置顶</el-button>
+                <el-button type="danger" :disabled="scope.row.defaulted === 'T'" @click="remove(scope.$index, scope.row.id)" icon="el-icon-remove" size="small">删除</el-button>
               </el-button-group>
             </el-col>
           </el-row>
@@ -35,14 +40,14 @@
         </el-form-item>
         <el-form-item label="上级分类" prop="path">
           <el-cascader style="width:100%"
+            placeholder="根目录"
             expand-trigger="hover"
             :options="pcodes"
             clearable
             :props="selProps"
             v-model="productCatalog.path"
             change-on-select
-            @change="changeDepth"
-            :disabled="formTitle === '新增' || formTitle === '新增子类'">
+            :disabled="formTitle === '新增' || formTitle === '新增子类' || productCatalog.defaulted === 'T'">
           </el-cascader>
         </el-form-item>
       </el-form>
@@ -56,7 +61,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { loadProductCatalog, addProductCatalog, editProductCatalog, removeProductCatalog } from '@/api/code/productcatalog'
+import { loadProductCatalog, addProductCatalog, editProductCatalog, removeProductCatalog, moveTopProductCatalog } from '@/api/code/productcatalog'
 import { loadAppCascadePathCode, loadAppCascadeCode } from '@/api/sys/code'
 import { SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, SUCCESS_TIP_TITLE, WARNING_TIP_TITLE } from '@/utils/constant'
 
@@ -89,10 +94,8 @@ export default {
       } else if (this.formTitle === '新增子类') { // 校验子类名称是否重复
         isUnique = checkUnique(this.productCatalogs, this.productCatalog.pid, this.productCatalog.id, value, this.productCatalog.depth)
       } else { // 校验当前层级名称是否重复
-        if (this.tmpDepth !== -1 && this.tmpPid !== -1) {
-          this.productCatalog.depth = this.tmpDepth
-          this.productCatalog.pid = this.tmpPid
-        }
+        this.productCatalog.depth = this.productCatalog.path.length + 1
+        this.productCatalog.pid = this.productCatalog.path[this.productCatalog.path.length - 1]
         isUnique = checkUnique(this.productCatalogs, this.productCatalog.pid, this.productCatalog.id, value, this.productCatalog.depth)
       }
       if (!isUnique) {
@@ -119,8 +122,7 @@ export default {
       productCatalog: {},
       pcodes: [],
       pname: '',
-      tmpDepth: -1, // 用于编辑类型时候临时记录级联下拉框所变值depth
-      tmpPid: -1 // 用于编辑类型时候临时记录级联下拉框所变值id
+      tmpPath: [] // 用于校验所选上级分类是否为原上级分类子类型
     }
   },
   computed: {
@@ -136,14 +138,21 @@ export default {
         this.productCatalogs = res.data
         this.productCatalogs.forEach(item => {
           item.depth = this.appCascadePathCode.productCatalog[item.id].path.length
+          let isLeaf = true
+          this.productCatalogs.forEach(subitem => {
+            if (subitem.pid === item.id) {
+              isLeaf = false
+            }
+          })
+          item.folderType = isLeaf ? 'folder' : 'folder-open'
           if (item.depth > 1) {
             let indent = ''
             for (let i = 1; i < item.depth; i++) {
-              indent += '- - '
+              indent += '&nbsp;&nbsp;&nbsp;&nbsp;'
             }
-            item.showName = indent + '|- ' + item.name
+            item.indent = indent
           } else {
-            item.showName = item.name
+            item.indent = ''
           }
         })
       })
@@ -163,10 +172,9 @@ export default {
     },
     openEdit: function(index, row) {
       this.productCatalog = Object.assign({}, row)
-      this.tmpDepth = -1
-      this.tmpPid = -1
       this.formTitle = '编辑'
-      const path = this.appCascadePathCode.productCatalog[row.id].path
+      this.tmpPath = this.appCascadePathCode.productCatalog[row.id].path
+      const path = Object.assign([], this.tmpPath)
       path.splice(-1, 1)
       this.productCatalog.path = path
       this.pcodes = this.appCascadeCode.productCatalog === undefined ? [] : this.appCascadeCode.productCatalog
@@ -175,7 +183,8 @@ export default {
     save: function() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          delete this.productCatalog.depth
+          delete this.productCatalog.folderType
+          delete this.productCatalog.indent
           if (this.productCatalog.path !== undefined && this.productCatalog.path.length > 0) {
             this.productCatalog.pid = this.productCatalog.path[this.productCatalog.path.length - 1]
           } else {
@@ -185,6 +194,9 @@ export default {
             if (this.formTitle === '新增子类') {
               this.productCatalog.id = null
             }
+            // 排序为当前层级元素个数
+            this.productCatalog.sort = this.productCatalogs.filter(item => { return item.depth === this.productCatalog.depth && item.pid === this.productCatalog.pid }).length
+            delete this.productCatalog.depth
             addProductCatalog(this.productCatalog).then(res => {
               this.$notify({
                 title: SUCCESS_TIP_TITLE,
@@ -197,6 +209,23 @@ export default {
               this.refreshCache()
             })
           } else {
+            if (this.productCatalog.path.length >= this.tmpPath.length) {
+              // 校验所选上级分类是否为原上级分类子类型
+              let pass = false
+              this.tmpPath.forEach((path, index) => {
+                if (this.productCatalog.path[index] !== path) {
+                  pass = true
+                }
+              })
+              if (!pass) {
+                this.$notify({
+                  title: WARNING_TIP_TITLE,
+                  message: '上级分类不允许为当前类或子类',
+                  type: 'warning'
+                })
+                return false
+              }
+            }
             editProductCatalog(this.productCatalog).then(res => {
               this.$notify({
                 title: SUCCESS_TIP_TITLE,
@@ -262,10 +291,12 @@ export default {
         })
       })
     },
-    // 记录上级分类修改时的depth/pid
-    changeDepth: function(val) {
-      this.tmpDepth = val.length + 1
-      this.tmpPid = val[val.length - 1]
+    // 置顶
+    moveTop: function(row) {
+      moveTopProductCatalog(row.id, row.pid).then(res => {
+        this.load()
+        this.refreshCache()
+      })
     }
   },
   mounted() {

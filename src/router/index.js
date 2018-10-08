@@ -105,6 +105,8 @@ export const asyncRouterMap = [
       }, {
         name: '删除仓库', key: 'removeWarehouse'
       }, {
+        name: '置顶仓库', key: 'moveTopWarehouse'
+      }, {
         name: '设置默认仓库', key: 'setDefaultWarehouse'
       }, {
         name: '启停仓库', key: 'enableWarehouse'
@@ -121,7 +123,7 @@ export const asyncRouterMap = [
       }, {
         name: '删除商品分类', key: 'removeProductCatalog'
       }, {
-        name: '商品分类置顶', key: 'moveTopProductCatalog'
+        name: '置顶商品分类', key: 'moveTopProductCatalog'
       }]
     }, {
       path: 'accountPeriod',
@@ -135,7 +137,33 @@ export const asyncRouterMap = [
       }, {
         name: '删除账期', key: 'removeAccountPeriod'
       }, {
-        name: '账期置顶', key: 'moveTopAccountPeriod'
+        name: '置顶账期', key: 'moveTopAccountPeriod'
+      }]
+    }, {
+      path: 'unit',
+      component: _import('code/unit'),
+      name: 'code_unit',
+      meta: { title: '计量单位', noCache: true },
+      action: [{
+        name: '新增计量单位', key: 'addUnit'
+      }, {
+        name: '删除计量单位', key: 'removeUnit'
+      }, {
+        name: '置顶计量单位', key: 'moveTopUnit'
+      }]
+    }, {
+      path: 'customerGrade',
+      component: _import('code/customerGrade'),
+      name: 'code_customerGrade',
+      meta: { title: '客户级别', noCache: true },
+      action: [{
+        name: '新增客户级别', key: 'addCustomerGrade'
+      }, {
+        name: '修改客户级别', key: 'editCustomerGrade'
+      }, {
+        name: '置顶客户级别', key: 'moveTopCustomerGrade'
+      }, {
+        name: '删除客户级别', key: 'removeCustomerGrade'
       }]
     }]
   },

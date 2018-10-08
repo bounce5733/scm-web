@@ -31,10 +31,10 @@ export function removeProductCatalog(id) {
   })
 }
 
-export function moveTopProductCatalog(id) {
+export function moveTopProductCatalog(id, pid) {
   return request({
     url: SCM_API_BASE + '/code/productcatalogs/moveTop/' + id,
-    method: 'get'
+    method: 'get',
+    params: { pid: pid }
   })
 }
-

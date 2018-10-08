@@ -48,3 +48,10 @@ export function enableWarehouse(id, status) {
   })
 }
 
+export function moveTopWarehouse(id) {
+  return request({
+    url: SCM_API_BASE + '/code/warehouses/moveTop/' + id,
+    method: 'get'
+  })
+}
+

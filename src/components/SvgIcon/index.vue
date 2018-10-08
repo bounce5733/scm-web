@@ -44,4 +44,9 @@ export default {
   width: 1.5em;
   height: 1.5em;
 }
+
+.svn-icon-product-catalog {
+  width: 1.5em;
+  height: 1.5em;
+}
 </style>

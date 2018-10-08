@@ -25,6 +25,7 @@
             <i class="el-icon-more"></i>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="edit" :disabled="!actions.includes('editWarehouse')"><i class="el-icon-edit"></i>&nbsp;修改</el-dropdown-item>
+              <el-dropdown-item command="moveTop" :disabled="!actions.includes('moveTopWarehouse')"  divided><i class="el-icon-upload2"></i>&nbsp;置顶</el-dropdown-item>
               <el-dropdown-item v-if="scope.row.enabled === 'T'" :disabled="!actions.includes('enableWarehouse')" command="disable" divided><i class="el-icon-remove"></i>&nbsp;禁用</el-dropdown-item>
               <el-dropdown-item v-else command="enable" :disabled="!actions.includes('enableWarehouse')" divided><i class="el-icon-circle-check"></i>&nbsp;启用</el-dropdown-item>
               <el-dropdown-item command="remove" :disabled="!actions.includes('removeWarehouse')"  divided><i class="el-icon-delete"></i>&nbsp;删除</el-dropdown-item>
@@ -57,7 +58,8 @@
 </template>
 
 <script>
-import { loadWarehouse, addWarehouse, editWarehouse, removeWarehouse, setDefaultWarehouse, enableWarehouse } from '@/api/code/warehouse'
+import { loadWarehouse, addWarehouse, editWarehouse, removeWarehouse, setDefaultWarehouse, enableWarehouse, moveTopWarehouse } from '@/api/code/warehouse'
+import { loadAppCode } from '@/api/sys/code'
 import { SUCCESS_TIP_TITLE, WARNING_TIP_TITLE, SAVE_SUCCESS, REMOVE_SUCCESS } from '@/utils/constant'
 
 export default {
@@ -92,7 +94,7 @@ export default {
     return {
       actions: this.$store.state.permission.menus[this.$route.name],
       warehouses: [],
-      // ------仓库编辑------
+      // ------编辑------
       warehouse: {},
       formTitle: '',
       formVisible: false,
@@ -134,6 +136,9 @@ export default {
             this.changeStatus('F')
           }
           break
+        case 'moveTop':
+          this.moveTop()
+          break
         case 'setDefault':
           this.setDefault()
           break
@@ -173,6 +178,7 @@ export default {
                 type: 'success'
               })
               this.$refs.warehouseForm.resetFields()
+              this.refreshCache()
               this.load()
               this.formVisible = false
             })
@@ -184,6 +190,7 @@ export default {
                 type: 'success'
               })
               this.$refs.warehouseForm.resetFields()
+              this.refreshCache()
               this.load()
               this.formVisible = false
             })
@@ -200,6 +207,7 @@ export default {
             message: '仓库状态修改成功',
             type: 'success'
           })
+          this.refreshCache()
           this.load()
         })
       })
@@ -212,8 +220,15 @@ export default {
             message: '设置成功',
             type: 'success'
           })
+          this.refreshCache()
           this.load()
         })
+      })
+    },
+    moveTop: function() {
+      moveTopWarehouse(this.warehouse.id).then(res => {
+        this.refreshCache()
+        this.load()
       })
     },
     remove: function() {
@@ -224,6 +239,7 @@ export default {
             message: REMOVE_SUCCESS,
             type: 'success'
           })
+          this.refreshCache()
           this.load()
         })
       }).catch(() => {})
@@ -234,6 +250,13 @@ export default {
     },
     formatterEnabledCol: function(row, column, cellValue, index) {
       return cellValue === 'T' ? '已启用' : '未启用'
+    },
+    // 刷新缓存
+    refreshCache: function() {
+      loadAppCode().then(res => {
+        this.$store.commit('ADD_APP_CODE', res.data)
+        this.load()
+      })
     }
   },
   mounted() {

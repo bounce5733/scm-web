@@ -1,37 +1,26 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <el-col :span="12">
+      <el-col :span="12" :offset="22">
         <el-form @submit.native.prevent :inline="true">
           <el-form-item>
             <el-button type="primary" :disabled="!actions.includes('addUser')" size="small" @click="openAdd">新增</el-button>
           </el-form-item>
         </el-form>
-        <el-table :data="users" @row-click="selUser" border style="width: 100%;">
-          <el-table-column label="操作" width="150">
-            <template slot-scope="scope">
-              <el-button-group>
-                <el-button type="primary" size="small" :disabled="!actions.includes('editUser')" @click="openEdit(scope.row)">编辑</el-button>
-                <el-button type="danger" size="small" :disabled="!actions.includes('removeUser')" @click="remove(scope.row.id)">删除</el-button>
-              </el-button-group>
-            </template>
-          </el-table-column>
-          <el-table-column prop="name" label="姓名" width="160" sortable></el-table-column>
-          <el-table-column prop="account" label="账号" sortable></el-table-column>
-        </el-table>
-      </el-col>
-      <el-col :span="12">
-        <el-container>
-          <el-header style="text-align:left; font-size:12px; border-width: 1px; border-style:solid; color:#333; line-height:60px;">
-            <span>{{curUserName}}权限</span>
-          </el-header>
-          <br>
-          <el-main style="border-width: 1px; border-style:solid;">
-            <el-tree class="menutree" :data="menus" :props="menuTreeProps" default-expand-all show-checkbox node-key="name" highlight-current ref="menuTree"></el-tree>
-          </el-main>
-        </el-container>
       </el-col>
     </el-row>
+    <el-table :data="users" border style="width: 100%;">
+      <el-table-column label="操作" width="150">
+        <template slot-scope="scope">
+          <el-button-group>
+            <el-button type="primary" size="small" :disabled="!actions.includes('editUser')" @click="openEdit(scope.row)">编辑</el-button>
+            <el-button type="danger" size="small" :disabled="!actions.includes('removeUser')" @click="remove(scope.row.id)">删除</el-button>
+          </el-button-group>
+        </template>
+      </el-table-column>
+      <el-table-column prop="name" label="姓名" width="160" sortable></el-table-column>
+      <el-table-column prop="account" label="账号" sortable></el-table-column>
+    </el-table>
 
     <!--编辑用户-->
     <el-dialog :title="formTitle" :close-on-click-modal="false" :visible.sync="formVisible">
@@ -59,9 +48,6 @@
 
 <script>
 import { loadUser, addUser, editUser, removeUser } from '@/api/console/user'
-import { userMenus } from '@/api/console/role'
-import { asyncRouterMap } from '@/router'
-import _ from 'lodash/lang'
 import { SUCCESS_TIP_TITLE, SAVE_SUCCESS, REMOVE_SUCCESS } from '@/utils/constant'
 
 export default {
@@ -110,14 +96,6 @@ export default {
           { required: true, trigger: 'blur', message: '姓名不能为空' },
           { max: 45, message: '最大长度45个字符', trigger: 'blur' }
         ]
-      },
-      // ------权限树------
-      menus: [],
-      allMenus: asyncRouterMap,
-      curUserName: '',
-      menuTreeProps: {
-        children: 'children',
-        label: 'title'
       }
     }
   },
@@ -125,54 +103,7 @@ export default {
     load: function() {
       loadUser().then(res => {
         this.users = res.data
-        this.curUserName = this.users[0].name
-        userMenus(this.users[0].id).then(res => {
-          const ids = []
-          Object.keys(res.data).forEach(menuid => {
-            ids.push(menuid)
-          })
-          const that = this
-          this.menus = this.menuTreeOpt(ids, _.cloneDeep(this.allMenus))
-          setTimeout(function() {
-            that.$refs.menuTree.setCheckedKeys(ids)
-          }, 100)
-        })
       })
-    },
-    selUser: function(row, event, column) {
-      this.selUserName = row.name
-      this.curUserName = row.name
-      userMenus(row.id).then(res => {
-        const ids = []
-        Object.keys(res.data).forEach(menuid => {
-          ids.push(menuid)
-        })
-        const that = this
-        this.menus = this.menuTreeOpt(ids, _.cloneDeep(this.allMenus))
-        setTimeout(function() {
-          that.$refs.menuTree.setCheckedKeys(ids)
-        }, 100)
-      })
-    },
-    // 过滤隐藏的菜单、给菜单添加title属性、过滤目录菜单id
-    menuTreeOpt: function(ids, menus) {
-      const accessedRouters = menus.filter(route => {
-        if (route.meta && route.meta.title) {
-          route.title = route.meta.title
-        }
-        if (route.hidden === undefined || !route.hidden) {
-          if (route.children && route.children.length) {
-            const index = ids.indexOf(route.name)
-            if (index >= 0) {
-              ids.splice(index, 1)
-            }
-            route.children = this.menuTreeOpt(ids, route.children)
-          }
-          return true
-        }
-        return false
-      })
-      return accessedRouters
     },
     openAdd: function() {
       this.user = {}

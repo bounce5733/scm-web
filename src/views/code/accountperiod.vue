@@ -16,7 +16,7 @@
             <el-table-column label="操作" align="center" width="260">
               <template slot-scope="scope">
                 <el-button-group>
-                  <el-button type="primary" :disabled="!actions.includes('editAccountPeriod')" icon="el-icon-edit" @click="openEdit(scope.row)" size="small">编辑</el-button>
+                  <el-button type="primary" :disabled="!actions.includes('editAccountPeriod')" icon="el-icon-edit" @click="openEdit(scope.row)" size="small">修改</el-button>
                   <el-button type="primary" :disabled="!actions.includes('moveTopAccountPeriod')" icon="el-icon-upload2" @click="moveTop(scope.row.id)" size="small">置顶</el-button>
                   <el-button type="danger" :disabled="!actions.includes('removeAccountPeriod')" icon="el-icon-remove" @click="remove(scope.row.id)" size="small">删除</el-button>
                 </el-button-group>
@@ -43,6 +43,7 @@
 
 <script>
 import { loadAccountPeriod, addAccountPeriod, editAccountPeriod, removeAccountPeriod, moveTopAccountPeriod } from '@/api/code/accountPeriod'
+import { loadAppCode } from '@/api/sys/code'
 import { SUCCESS_TIP_TITLE, SAVE_SUCCESS, REMOVE_SUCCESS } from '@/utils/constant'
 
 export default {
@@ -77,7 +78,7 @@ export default {
     return {
       actions: this.$store.state.permission.menus[this.$route.name],
       accountPeriods: [],
-      // ------仓库编辑------
+      // ------编辑------
       accountPeriod: {},
       formTitle: '',
       formVisible: false,
@@ -119,6 +120,7 @@ export default {
                 type: 'success'
               })
               this.$refs.accountPeriodForm.resetFields()
+              this.refreshCache()
               this.load()
               this.formVisible = false
             })
@@ -130,6 +132,7 @@ export default {
                 type: 'success'
               })
               this.$refs.accountPeriodForm.resetFields()
+              this.refreshCache()
               this.load()
               this.formVisible = false
             })
@@ -139,6 +142,7 @@ export default {
     },
     moveTop: function(id) {
       moveTopAccountPeriod(id).then(res => {
+        this.refreshCache()
         this.load()
       })
     },
@@ -150,6 +154,7 @@ export default {
             message: REMOVE_SUCCESS,
             type: 'success'
           })
+          this.refreshCache()
           this.load()
         })
       }).catch(() => {})
@@ -157,6 +162,13 @@ export default {
     cancelForm: function() {
       this.$refs.accountPeriodForm.resetFields()
       this.formVisible = false
+    },
+    // 刷新缓存
+    refreshCache: function() {
+      loadAppCode().then(res => {
+        this.$store.commit('ADD_APP_CODE', res.data)
+        this.load()
+      })
     }
   },
   mounted() {
