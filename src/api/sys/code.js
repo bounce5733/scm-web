@@ -80,3 +80,12 @@ export function removeItem(id) {
     method: 'delete'
   })
 }
+
+export function moveTopCodeItem(id, pid) {
+  return request({
+    url: SCM_API_BASE + '/sys/codes/moveTopCodeItem/' + id,
+    method: 'get',
+    params: { pid: pid }
+  })
+}
+

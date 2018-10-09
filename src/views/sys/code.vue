@@ -1,13 +1,19 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <el-col :span="12">
-        <el-form @submit.native.prevent :inline="true">
-          <el-form-item>
-            <el-button type="primary" :disabled="!actions.includes('addCode')" size="small" @click="openCodeAdd">新增</el-button>
-          </el-form-item>
-        </el-form>
+      <el-col :span="8">
+        <el-row>
+          <el-col :span="2" :offset="21">
+            <el-form @submit.native.prevent :inline="true">
+              <el-form-item>
+                <el-button type="primary" :disabled="!actions.includes('addCode')" size="small" @click="openCodeAdd">新增</el-button>
+              </el-form-item>
+            </el-form>
+          </el-col>
+        </el-row>
         <el-table :data="codes" @row-click="showItem" highlight-current-row stripe border style="width: 100%;">
+          <el-table-column prop="code" label="编码"></el-table-column>
+          <el-table-column prop="name" label="名称"></el-table-column>
           <el-table-column label="操作" width="78">
             <template slot-scope="scope">
               <el-button-group>
@@ -15,28 +21,36 @@
               </el-button-group>
             </template>
           </el-table-column>
-          <el-table-column prop="code" label="编码" width="156" sortable></el-table-column>
-          <el-table-column prop="name" label="名称" sortable></el-table-column>
         </el-table>
       </el-col>
-      <el-col :span="12">
-        <el-form @submit.native.prevent :inline="true">
-          <el-form-item>
-            <el-button type="primary" :disabled="code.code === undefined || !actions.includes('addCodeItem')" @click="openItemAdd" size="small">新增</el-button>
-          </el-form-item>
-        </el-form>
+      <el-col :span="16">
+        <el-row>
+          <el-col :span="2" :offset="21">
+            <el-form @submit.native.prevent :inline="true">
+              <el-form-item>
+                <el-button type="primary" :disabled="code.code === undefined || !actions.includes('addCodeItem')" @click="openAddItem" size="small">新增</el-button>
+              </el-form-item>
+            </el-form>
+          </el-col>
+        </el-row>
         <el-table :data="code.items" highlight-current-row border style="width: 100%;">
-          <el-table-column align="center" label="操作" width="150">
+          <el-table-column label="名称">
+            <template slot-scope="scope">
+              <span v-html="scope.row.indent"></span>
+              <svg-icon :icon-class="scope.row.folderType" class-name="svn-icon-product-catalog"></svg-icon>
+              &nbsp;&nbsp;
+              <span>{{scope.row.name}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="操作" width="340">
             <template slot-scope="scope">
               <el-button-group>
-                <el-button type="primary" :disabled="!actions.includes('editCodeItem')" @click="openItemEdit(scope.$index, scope.row)" size="small">编辑</el-button>
+                <el-button type="primary" @click="openAddSubItem(scope.row)" icon="el-icon-plus" size="small">新增子类</el-button>
+                <el-button type="primary" :disabled="!actions.includes('editCodeItem')" @click="openEditItem(scope.$index, scope.row)" size="small">修改</el-button>
+                <el-button type="primary" icon="el-icon-upload2" @click="moveTop(scope.row)" size="small">置顶</el-button>
                 <el-button type="danger" :disabled="!actions.includes('removeCodeItem')" @click="removeItem(scope.$index, scope.row)" size="small">删除</el-button>
               </el-button-group>
             </template>
-          </el-table-column>
-          <el-table-column prop="showName" label="名称" width="300">
-          </el-table-column>
-          <el-table-column prop="sort" label="排序" width="100">
           </el-table-column>
         </el-table>
       </el-col>
@@ -57,35 +71,23 @@
       </div>
     </el-dialog>
     <!-- 编辑字典项目界面 -->
-  <el-dialog :title="itemFormTitle" :visible.sync="itemFormVisible" :close-on-click-modal="false">
-      <el-form :model="item" :rules="itemRules" ref="itemForm" label-width="100px">
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="上级分类">
-              <el-cascader
-                expand-trigger="hover"
-                :options="pcodes"
-                clearable
-                :props="codeSelProps"
-                v-model="item.path"
-                change-on-select
-                :disabled="itemFormTitle != '新增'">
-              </el-cascader>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="名称" prop="name">
-              <el-input v-model="item.name"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="排序" prop="sort">
-              <el-input-number v-model="item.sort" :min="1" :max="99" controls-position="right"></el-input-number>
-            </el-form-item>
-          </el-col>
-        </el-row>
+  <el-dialog :title="itemFormTitle" :visible.sync="itemFormVisible" width="40%" :close-on-click-modal="false">
+      <el-form :model="item" :rules="itemRules" ref="itemForm" label-width="80px">
+      <el-form-item label="名称" prop="name">
+        <el-input v-model="item.name"></el-input>
+      </el-form-item>
+      <el-form-item label="上级分类">
+          <el-cascader style="width:100%"
+            placeholder="根目录"
+            expand-trigger="hover"
+            :options="pcodes"
+            clearable
+            :props="codeSelProps"
+            v-model="item.path"
+            change-on-select
+            :disabled="itemFormTitle === '新增' || itemFormTitle === '新增子类'">
+          </el-cascader>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
           <el-button @click="cancelItemForm">取消</el-button>
@@ -97,7 +99,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { loadCode, loadSysCode, loadSysPathCode, addCode, removeCode, addItem, editItem, removeItem } from '@/api/sys/code'
+import { loadCode, loadSysCode, loadSysPathCode, addCode, removeCode, addItem, editItem, removeItem, moveTopCodeItem } from '@/api/sys/code'
 import { SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, SUCCESS_TIP_TITLE, WARNING_TIP_TITLE } from '@/utils/constant'
 
 export default {
@@ -154,11 +156,9 @@ export default {
       itemRules: {
         name: [
           { required: true, message: '名称不能为空', trigger: 'blur' }
-        ],
-        sort: [
-          { required: true, message: '排序不能为空', trigger: 'blur' }
         ]
-      }
+      },
+      tmpPath: [] // 用于校验所选上级分类是否为原上级分类子类型
     }
   },
   computed: {
@@ -180,15 +180,22 @@ export default {
             }
           }
           code.items.forEach(item => {
-            let indent = ''
-            const depth = this.sysPathCode[item.id].path.length - 1
-            for (let i = 0; i < depth; i++) {
-              indent += '- - '
-            }
-            if (depth > 0) {
-              item.showName = indent + '|- ' + item.name
+            item.depth = this.sysPathCode[item.id].path.length
+            let isLeaf = true
+            code.items.forEach(subitem => {
+              if (subitem.pid === item.id) {
+                isLeaf = false
+              }
+            })
+            item.folderType = isLeaf ? 'folder' : 'folder-open'
+            if (item.depth > 1) {
+              let indent = ''
+              for (let i = 1; i < item.depth; i++) {
+                indent += '&nbsp;&nbsp;&nbsp;&nbsp;'
+              }
+              item.indent = indent
             } else {
-              item.showName = item.name
+              item.indent = ''
             }
           })
         })
@@ -261,31 +268,39 @@ export default {
       this.codeFormVisible = false
     },
     // ------编辑字典项目------
-    openItemAdd: function() {
+    openAddItem: function() {
       this.itemFormTitle = '新增'
       this.itemFormVisible = true
-      this.item.sort = this.code.items.length + 1
-      this.pcodes = this.sysCode[this.code.code] === undefined ? [] : this.sysCode[this.code.code]
+      this.item = { depth: 1, pid: 0 }
     },
-    openItemEdit: function(index, row) {
+    openEditItem: function(index, row) {
       this.item = Object.assign({}, row)
       this.itemFormTitle = '编辑'
-      const path = this.sysPathCode[row.id].path
+      this.tmpPath = this.sysPathCode[row.id].path
+      const path = Object.assign([], this.tmpPath)
       path.splice(-1, 1)
       this.item.path = path
+      this.pcodes = this.sysCode[this.code.code] === undefined ? [] : this.sysCode[this.code.code]
+      this.itemFormVisible = true
+    },
+    openAddSubItem: function(row) {
+      this.itemFormTitle = '新增子类'
+      const path = this.sysPathCode[row.id].path
+      this.item = { id: row.id, pid: row.id, path: path, depth: row.depth + 1 }
       this.pcodes = this.sysCode[this.code.code] === undefined ? [] : this.sysCode[this.code.code]
       this.itemFormVisible = true
     },
     saveItem: function() {
       this.$refs.itemForm.validate((valid) => {
         if (valid) {
-          if (this.item.path !== undefined && this.item.path.length > 0) {
-            this.item.pid = this.item.path[this.item.path.length - 1]
-          } else {
-            this.item.pid = '0'
-          }
           this.item.type = this.code.code
-          if (this.itemFormTitle === '新增') {
+          if (this.itemFormTitle === '新增' || this.itemFormTitle === '新增子类') {
+            if (this.itemFormTitle === '新增子类') {
+              this.item.id = null
+            }
+            // 排序为当前层级元素个数
+            this.item.sort = this.code.items.filter(item => { return item.depth === this.item.depth && item.pid === this.item.pid }).length
+            delete this.item.depth
             addItem(this.item).then(res => {
               this.$notify({
                 title: SUCCESS_TIP_TITLE,
@@ -298,6 +313,31 @@ export default {
               this.itemFormVisible = false
             })
           } else {
+            if (this.item.path.length >= this.tmpPath.length) {
+              // 校验所选上级分类是否为原上级分类子类型
+              let pass = false
+              this.tmpPath.forEach((path, index) => {
+                if (this.item.path[index] !== path) {
+                  pass = true
+                }
+              })
+              if (!pass) {
+                this.$notify({
+                  title: WARNING_TIP_TITLE,
+                  message: '上级分类不允许为当前类或子类',
+                  type: 'warning'
+                })
+                return false
+              }
+            }
+            if (this.item.path !== undefined && this.item.path.length > 0) {
+              this.item.pid = this.item.path[this.item.path.length - 1]
+            } else {
+              this.item.pid = 0
+            }
+            delete this.item.folderType
+            delete this.item.indent
+            delete this.item.depth
             editItem(this.item).then(res => {
               this.$notify({
                 title: SUCCESS_TIP_TITLE,
@@ -349,6 +389,12 @@ export default {
           }
         })
       }).catch(() => {})
+    },
+    // 置顶
+    moveTop: function(row) {
+      moveTopCodeItem(row.id, row.pid).then(res => {
+        this.refreshCache()
+      })
     },
     cancelItemForm: function() {
       this.$refs.itemForm.resetFields()

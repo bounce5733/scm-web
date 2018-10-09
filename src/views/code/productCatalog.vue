@@ -33,7 +33,7 @@
       </el-table-column>
     </el-table>
     <!-- 编辑 -->
-    <el-dialog :title="formTitle" :visible.sync="formVisible" width="50%" :close-on-click-modal="false">
+    <el-dialog :title="formTitle" :visible.sync="formVisible" width="40%" :close-on-click-modal="false">
       <el-form :model="productCatalog" :rules="formRules" label-width="80px" ref="form">
         <el-form-item label="分类名称" prop="name">
           <el-input v-model="productCatalog.name"></el-input>
@@ -158,10 +158,9 @@ export default {
       })
     },
     openAdd: function() {
-      this.productCatalog = { depth: 1 }
+      this.productCatalog = { depth: 1, pid: 0 }
       this.formTitle = '新增'
       this.formVisible = true
-      this.productCatalog.pid = 0
     },
     openAddItem: function(row) {
       this.formTitle = '新增子类'
@@ -183,13 +182,6 @@ export default {
     save: function() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          delete this.productCatalog.folderType
-          delete this.productCatalog.indent
-          if (this.productCatalog.path !== undefined && this.productCatalog.path.length > 0) {
-            this.productCatalog.pid = this.productCatalog.path[this.productCatalog.path.length - 1]
-          } else {
-            this.productCatalog.pid = 0
-          }
           if (this.formTitle === '新增' || this.formTitle === '新增子类') {
             if (this.formTitle === '新增子类') {
               this.productCatalog.id = null
@@ -226,6 +218,14 @@ export default {
                 return false
               }
             }
+            if (this.productCatalog.path !== undefined && this.productCatalog.path.length > 0) {
+              this.productCatalog.pid = this.productCatalog.path[this.productCatalog.path.length - 1]
+            } else {
+              this.productCatalog.pid = 0
+            }
+            delete this.productCatalog.folderType
+            delete this.productCatalog.indent
+            delete this.productCatalog.depth
             editProductCatalog(this.productCatalog).then(res => {
               this.$notify({
                 title: SUCCESS_TIP_TITLE,
