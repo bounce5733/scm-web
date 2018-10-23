@@ -1,5 +1,5 @@
 import { loginByAccount, cacheAction, logout } from '@/api/sys/login'
-import { getUserInfo } from '@/api/console/user'
+import { getUserInfo } from '@/api/bas/user'
 import { TOKEN_KEY, TIP_DURATION_TIME } from '@/utils/constant'
 import { asyncRouterMap } from '@/router'
 import { Message } from 'element-ui'

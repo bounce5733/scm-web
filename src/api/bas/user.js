@@ -3,21 +3,21 @@ import { SCM_API_BASE } from '@/utils/constant'
 
 export function getUserInfo() {
   return request({
-    url: SCM_API_BASE + '/users/userinfo',
+    url: SCM_API_BASE + '/bas/users/userinfo',
     method: 'get'
   })
 }
 
 export function loadUser() {
   return request({
-    url: SCM_API_BASE + '/users',
+    url: SCM_API_BASE + '/bas/users',
     method: 'get'
   })
 }
 
 export function addUser(data) {
   return request({
-    url: SCM_API_BASE + '/users',
+    url: SCM_API_BASE + '/bas/users',
     method: 'post',
     data: data
   })
@@ -25,7 +25,7 @@ export function addUser(data) {
 
 export function editUser(data) {
   return request({
-    url: SCM_API_BASE + '/users',
+    url: SCM_API_BASE + '/bas/users',
     method: 'patch',
     data: data
   })
@@ -33,14 +33,14 @@ export function editUser(data) {
 
 export function removeUser(id) {
   return request({
-    url: SCM_API_BASE + '/users/' + id,
+    url: SCM_API_BASE + '/bas/users/' + id,
     method: 'delete'
   })
 }
 
 export function matchUserWithAccountOrName(params) {
   return request({
-    url: SCM_API_BASE + '/users/matchWithAccountOrName',
+    url: SCM_API_BASE + '/bas/users/matchWithAccountOrName',
     method: 'get',
     params: params
   })
@@ -48,7 +48,7 @@ export function matchUserWithAccountOrName(params) {
 
 export function roleUsers(roleid) {
   return request({
-    url: SCM_API_BASE + '/users/role/' + roleid,
+    url: SCM_API_BASE + '/bas/users/role/' + roleid,
     method: 'get'
   })
 }

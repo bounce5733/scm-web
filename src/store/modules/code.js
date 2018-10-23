@@ -1,4 +1,4 @@
-import { loadAppCode, loadSysCode, loadSysPathCode, loadAppCascadeCode, loadAppCascadePathCode } from '@/api/sys/code'
+import { loadAppCode, loadSysCode, loadSysPathCode, loadAppCascadeCode, loadAppCascadePathCode } from '@/api/console/code'
 
 const codes = {
   state: {

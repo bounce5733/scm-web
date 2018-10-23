@@ -4,7 +4,7 @@
       <el-col :span="12" :offset="22">
         <el-form @submit.native.prevent :inline="true">
           <el-form-item>
-            <el-button type="primary" :disabled="!actions.includes('addUser')" size="small" @click="openAdd">新增</el-button>
+            <el-button type="primary" size="small" @click="openAdd">新增</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -13,8 +13,8 @@
       <el-table-column label="操作" width="150">
         <template slot-scope="scope">
           <el-button-group>
-            <el-button type="primary" size="small" :disabled="!actions.includes('editUser')" @click="openEdit(scope.row)">编辑</el-button>
-            <el-button type="danger" size="small" :disabled="!actions.includes('removeUser')" @click="remove(scope.row.id)">删除</el-button>
+            <el-button type="primary" size="small" @click="openEdit(scope.row)">编辑</el-button>
+            <el-button type="danger" size="small" @click="remove(scope.row.id)">删除</el-button>
           </el-button-group>
         </template>
       </el-table-column>
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { loadUser, addUser, editUser, removeUser } from '@/api/console/user'
+import { loadUser, addUser, editUser, removeUser } from '@/api/bas/user'
 import { SUCCESS_TIP_TITLE, SAVE_SUCCESS, REMOVE_SUCCESS } from '@/utils/constant'
 
 export default {
@@ -80,7 +80,6 @@ export default {
     }
 
     return {
-      actions: this.$store.state.permission.menus[this.$route.name],
       users: [],
       // ------用户编辑------
       user: {},

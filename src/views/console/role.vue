@@ -4,7 +4,7 @@
       <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
         <el-form :inline="true" @submit.native.prevent>
           <el-form-item>
-            <el-button type="primary" :disabled="!actions.includes('addRole')" @click="openAdd" size="small">新增</el-button>
+            <el-button type="primary" @click="openAdd" size="small">新增</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -12,21 +12,15 @@
 
     <!--列表-->
     <el-table :data="roles" highlight-current-row border style="width: 100%;">
-      <el-table-column label="操作" align="center" width="290">
+      <el-table-column prop="name" label="角色名称" sortable></el-table-column>
+      <el-table-column prop="descn" label="描述" sortable></el-table-column>
+      <el-table-column label="操作" align="center" width="240">
         <template slot-scope="scope">
           <el-button-group>
-            <el-button type="primary" size="small" :disabled="!actions.includes('assignUsers')" @click="openAssignUsers(scope.$index, scope.row)">授权用户</el-button>
-            <el-button type="primary" size="small" :disabled="!actions.includes('assignMenus')" @click="openAssignMenus(scope.$index, scope.row)">分配权限</el-button>
-            <el-button type="primary" size="small" :disabled="!actions.includes('editRole') || scope.row.id === superAdminRoleId" @click="openEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button type="danger" :disabled="!actions.includes('removeRole') || scope.row.id === superAdminRoleId" size="small" @click="remove(scope.row)">删除</el-button>
+            <el-button type="primary" size="small" @click="openAssignMenus(scope.$index, scope.row)">分配权限</el-button>
+            <el-button type="primary" size="small" @click="openEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button type="danger"  size="small" @click="remove(scope.row)">删除</el-button>
           </el-button-group>
-        </template>
-      </el-table-column>
-      <el-table-column prop="name" label="角色名称" width="220" sortable></el-table-column>
-      <el-table-column prop="descn" label="描述" sortable></el-table-column>
-      <el-table-column prop="enabled" label="启用" width="100">
-        <template slot-scope="scope">
-          <el-switch v-model="scope.row.enabled" disabled></el-switch>
         </template>
       </el-table-column>
     </el-table>
@@ -38,15 +32,6 @@
           <el-col :span="12">
             <el-form-item label="名称" prop="name">
               <el-input v-model="role.name"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col v-if="!isNew" :span="12">
-            <el-form-item label="启用">
-              <el-switch
-                v-model="role.enabled"
-                active-color="#13ce66"
-                inactive-color="#ff4949">
-              </el-switch>
             </el-form-item>
           </el-col>
         </el-row>
@@ -63,37 +48,7 @@
         <el-button type="primary" @click.native="save">确认</el-button>
       </div>
     </el-dialog>
-
-    <!--分配用户-->
-    <el-dialog title="分配用户" :close-on-click-modal="false" :visible.sync="userFormVisible">
-      <el-row>
-        <el-form :inline="true">
-          <el-form-item>
-            <el-select v-model="selUser" @change="selUserChange" filterable remote reserve-keyword placeholder="账号/姓名匹配" :remote-method="matchUser">
-              <el-option v-for="user in matchUsers" :key="user.id" :label="user.name" :value="user.id">
-                <span style="float: left">{{ user.name }}</span>
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-      </el-row>
-      <el-table :data="users" highlight-current-row border style="width: 100%;">
-        <el-table-column align="center" label="操作" width="100">
-          <template slot-scope="scope">
-            <el-button-group>
-              <el-button type="danger" size="small" icon="el-icon-delete" @click="removeUser(scope.$index, scope.row)"></el-button>
-            </el-button-group>
-          </template>
-        </el-table-column>
-        <el-table-column prop="account" label="账号" width="150"></el-table-column>
-        <el-table-column prop="name" label="姓名" width="150"></el-table-column>
-      </el-table>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click.native="cancelUserForm">取消</el-button>
-        <el-button type="primary" @click.native="assignUsers">提交</el-button>
-      </div>
-    </el-dialog>
-
+    
     <!--分配菜单界面-->
     <el-dialog title="分配菜单" width="60%" :visible.sync="menuFormVisible" :close-on-click-modal="false">
       <div>
@@ -122,10 +77,9 @@
 </template>
 
 <script>
-import { loadRole, addRole, editRole, removeRole, assignUsers, assignMenus } from '@/api/console/role'
-import { matchUserWithAccountOrName, roleUsers } from '@/api/console/user'
-import { roleMenus } from '@/api/console/role'
-import { SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, SUCCESS_TIP_TITLE, WARNING_TIP_TITLE, SUPER_ADMIN_ROLEID } from '@/utils/constant'
+import { loadRole, addRole, editRole, removeRole, assignMenus } from '@/api/bas/role'
+import { roleMenus } from '@/api/bas/role'
+import { SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, SUCCESS_TIP_TITLE } from '@/utils/constant'
 import { asyncRouterMap } from '@/router'
 import _ from 'lodash/lang'
 
@@ -159,9 +113,6 @@ export default {
       callback()
     }
     return {
-      actions: this.$store.state.permission.menus[this.$route.name],
-      checkboxGroup6: [],
-      superAdminRoleId: SUPER_ADMIN_ROLEID,
       roles: [],
       // ------编辑角色------
       formVisible: false,
@@ -179,11 +130,6 @@ export default {
         ]
       },
       curRoleid: '', // 当前选择角色主键
-      // ------授权用户------
-      userFormVisible: false,
-      matchUsers: [],
-      users: [],
-      selUser: '',
       // ------授权菜单------
       menuTreeProps: {
         children: 'children',
@@ -198,13 +144,10 @@ export default {
     load: function() {
       loadRole().then(res => {
         this.roles = res.data
-        this.roles.forEach(role => {
-          role.enabled = role.enabled === 'T' ? 'true' : 'false'
-        })
       })
     },
     openAdd: function() {
-      this.role = {}
+      this.role = { appid: 0 }
       this.isNew = true
       this.formTitle = '新增'
       this.formVisible = true
@@ -231,7 +174,6 @@ export default {
               this.formVisible = false
             })
           } else {
-            this.role.enabled = this.role.enabled ? 'T' : 'F'
             editRole(this.role).then(res => {
               this.$notify({
                 title: SUCCESS_TIP_TITLE,
@@ -262,63 +204,6 @@ export default {
       this.$refs.roleForm.resetFields()
       this.formVisible = false
     },
-    // ------分配用户------
-    openAssignUsers: function(index, row) {
-      this.selUser = ''
-      this.curRoleid = row.id
-      roleUsers(row.id).then(res => {
-        this.users = res.data
-        this.userFormVisible = true
-      })
-    },
-    assignUsers: function() {
-      const userids = []
-      this.users.forEach(user => {
-        userids.push(user.id)
-      })
-      assignUsers(this.curRoleid, userids).then(res => {
-        this.$notify({
-          title: SUCCESS_TIP_TITLE,
-          message: '授权成功',
-          type: 'success'
-        })
-      })
-      this.cancelUserForm()
-    },
-    removeUser: function(index, row) {
-      this.users.splice(index, 1)
-    },
-    selUserChange: function(userid) {
-      let isExist = false
-      this.users.forEach(user => {
-        if (user.id === userid) {
-          this.$notify({
-            title: WARNING_TIP_TITLE,
-            message: '该用户已分配',
-            type: 'warning'
-          })
-          isExist = true
-        }
-      })
-      if (!isExist) {
-        this.matchUsers.forEach(user => {
-          if (user.id === userid) {
-            this.users.push(user)
-          }
-        })
-      }
-    },
-    // 授权人查询
-    matchUser: function(param) {
-      if (param.length === 0) return
-      if (param.trim() === '1') return
-      matchUserWithAccountOrName({ param: param }).then(res => {
-        this.matchUsers = res.data
-      })
-    },
-    cancelUserForm: function() {
-      this.userFormVisible = false
-    },
     // ------分配菜单------
     openAssignMenus: function(index, row) {
       this.curRoleid = row.id
@@ -341,13 +226,16 @@ export default {
         }, 100)
       })
     },
-    // 过滤隐藏的菜单、给菜单添加title属性、过滤目录菜单id
+    // 过滤隐藏的菜单、给菜单添加title属性、过滤目录菜单id、设置菜单action数组
     menuTreeOpt: function(menuKeys, actionMap, menus) {
       const accessedRouters = menus.filter(route => {
+        if (route.name && route.name.substr(0, 8) === 'console' || route.hidden) {
+          return false
+        }
         if (route.meta && route.meta.title) {
           route.title = route.meta.title
         }
-        if (route.hidden === undefined || !route.hidden) {
+        if (route.hidden === undefined) {
           if (route.children && route.children.length) {
             const index = menuKeys.indexOf(route.name)
             if (index >= 0) {

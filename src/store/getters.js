@@ -8,6 +8,7 @@ const getters = {
   appCode: state => state.code.appCode,
   username: state => state.code.name,
   appCascadeCode: state => state.code.appCascadeCode,
-  appCascadePathCode: state => state.code.appCascadePathCode
+  appCascadePathCode: state => state.code.appCascadePathCode,
+  sysMenuActions: state => state.permission.sysMenuActions
 }
 export default getters

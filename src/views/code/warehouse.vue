@@ -59,7 +59,7 @@
 
 <script>
 import { loadWarehouse, addWarehouse, editWarehouse, removeWarehouse, setDefaultWarehouse, enableWarehouse, moveTopWarehouse } from '@/api/code/warehouse'
-import { loadAppCode } from '@/api/sys/code'
+import { loadAppCode } from '@/api/console/code'
 import { SUCCESS_TIP_TITLE, WARNING_TIP_TITLE, SAVE_SUCCESS, REMOVE_SUCCESS } from '@/utils/constant'
 
 export default {

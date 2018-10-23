@@ -62,7 +62,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { loadProductCatalog, addProductCatalog, editProductCatalog, removeProductCatalog, moveTopProductCatalog } from '@/api/code/productcatalog'
-import { loadAppCascadePathCode, loadAppCascadeCode } from '@/api/sys/code'
+import { loadAppCascadePathCode, loadAppCascadeCode } from '@/api/console/code'
 import { SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, SUCCESS_TIP_TITLE, WARNING_TIP_TITLE } from '@/utils/constant'
 
 export default {
@@ -136,6 +136,7 @@ export default {
     load: function() {
       loadProductCatalog().then(res => {
         this.productCatalogs = res.data
+        console.log(JSON.stringify(this.appCascadePathCode))
         this.productCatalogs.forEach(item => {
           item.depth = this.appCascadePathCode.productCatalog[item.id].path.length
           let isLeaf = true

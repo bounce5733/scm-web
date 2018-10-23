@@ -43,7 +43,7 @@
 
 <script>
 import { loadAccountPeriod, addAccountPeriod, editAccountPeriod, removeAccountPeriod, moveTopAccountPeriod } from '@/api/code/accountPeriod'
-import { loadAppCode } from '@/api/sys/code'
+import { loadAppCode } from '@/api/console/code'
 import { SUCCESS_TIP_TITLE, SAVE_SUCCESS, REMOVE_SUCCESS } from '@/utils/constant'
 
 export default {

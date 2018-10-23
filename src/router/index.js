@@ -84,7 +84,10 @@ export const asyncRouterMap = [
       path: 'hr',
       component: _import('bas/hr/index'),
       name: 'bas_hr',
-      meta: { title: '部门与员工', noCache: true }
+      meta: { title: '部门与员工', noCache: true },
+      action: [{
+        name: '角色授权', key: 'authRole'
+      }]
     }]
   },
   {
@@ -174,40 +177,22 @@ export const asyncRouterMap = [
     name: 'console',
     meta: { title: '控制台', icon: 'setting' },
     children: [{
-      path: 'user',
-      component: _import('console/user'),
-      name: 'console_user',
-      meta: { title: '用户', noCache: true },
-      action: [{
-        name: '新增用户', key: 'addUser'
-      }, {
-        name: '编辑用户', key: 'editUser'
-      }, {
-        name: '删除用户', key: 'removeUser'
-      }]
-    }, {
       path: 'role',
       component: _import('console/role'),
       name: 'console_role',
-      meta: { title: '角色', noCache: true },
-      action: [{
-        name: '新增角色', key: 'addRole'
-      }, {
-        name: '编辑角色', key: 'editRole'
-      }, {
-        name: '删除角色', key: 'removeRole'
-      }, {
-        name: '分配权限', key: 'assignMenus'
-      }, {
-        name: '授权用户', key: 'assignUsers'
-      }]
+      meta: { title: '角色' }
+    }, {
+      path: 'code',
+      component: _import('sys/code'),
+      name: 'sys_code',
+      meta: { title: '字典' }
     }]
   },
   {
     path: '/sys',
     component: Layout,
     name: 'sys',
-    meta: { title: '控制台', icon: 'setting' },
+    meta: { title: '系统', icon: 'setting' },
     children: [{
       path: 'optlog',
       component: _import('sys/optlog'),
@@ -218,22 +203,6 @@ export const asyncRouterMap = [
       component: _import('sys/set'),
       name: 'sys_set',
       meta: { title: '设置', noCache: true }
-    }, {
-      path: 'code',
-      component: _import('sys/code'),
-      name: 'sys_code',
-      meta: { title: '字典', noCache: true },
-      action: [{
-        name: '新增字典', key: 'addCode'
-      }, {
-        name: '编辑字典', key: 'removeCode'
-      }, {
-        name: '新增字典条目', key: 'addCodeItem'
-      }, {
-        name: '编辑字典条目', key: 'editCodeItem'
-      }, {
-        name: '删除字典条目', key: 'removeCodeItem'
-      }]
     }]
   },
   { path: '*', redirect: '/404', hidden: true }

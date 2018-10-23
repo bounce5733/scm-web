@@ -21,6 +21,3 @@ export const TIP_DURATION_TIME = 3 * 1000
 export const SCM_API_BASE = 'http://localhost:9111'
 
 export const BASE64_IMG_PREFIX = 'data:image/jpg;base64,'
-
-// 超级管理员ID（系统固定）
-export const SUPER_ADMIN_ROLEID = 0

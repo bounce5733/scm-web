@@ -6,7 +6,8 @@ const permission = {
     allPermissionRouters: constantRouterMap, // 用户所有菜单路由集合
     asyncPermissionRouters: [], // 用户动态菜单路由集合
     asyncPermissionMenuKeys: [], // 用户菜单key集合
-    menus: {} // 用户菜单map{menu_key,[action_key]}
+    menus: {}, // 用户菜单map{menu_key,[action_key]}
+    sysMenuActions: {} // 系统菜单map{menu_key,[action_key]}
   },
   mutations: {
     SET_ROUTERS: (state, allPermissionRouters) => {
@@ -18,6 +19,9 @@ const permission = {
     },
     SET_MENUS: (state, menus) => {
       state.menus = menus
+    },
+    SET_SYS_MENU_ACTIONS: (state, menus) => {
+      state.sysMenuActions = menus
     }
   },
   actions: {
@@ -27,15 +31,31 @@ const permission = {
         asyncPermissionMenuKeys.push(menuid)
       }
       return new Promise(resolve => {
-        const tempRouter = _.cloneDeep(asyncRouterMap)
-        const asyncPermissionRouters = filterAsyncRouter(tempRouter, asyncPermissionMenuKeys)
+        const asyncPermissionRouters = filterAsyncRouter(_.cloneDeep(asyncRouterMap), asyncPermissionMenuKeys)
         commit('SET_MENUIDS', asyncPermissionMenuKeys)
         commit('SET_MENUS', menus)
         commit('SET_ROUTERS', asyncPermissionRouters)
+        // 生成系统菜单动作map
+        const sysMenuActions = {}
+        menuActions(sysMenuActions, _.cloneDeep(asyncRouterMap))
+        commit('SET_SYS_MENU_ACTIONS', sysMenuActions)
         resolve()
       })
     }
   }
+}
+
+// 获取menu->action映射
+function menuActions(sysMenuActions, menus) {
+  menus.filter(route => {
+    if (route.children && route.children.length) {
+      menuActions(sysMenuActions, route.children)
+    } else {
+      if (route.meta && route.action && (route.hidden === undefined || !route.hidden)) {
+        sysMenuActions[route.name] = route.action
+      }
+    }
+  })
 }
 
 /**

@@ -99,7 +99,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { loadCode, loadSysCode, loadSysPathCode, addCode, removeCode, addItem, editItem, removeItem, moveTopCodeItem } from '@/api/sys/code'
+import { loadCode, loadSysCode, loadSysPathCode, addCode, removeCode, addItem, editItem, removeItem, moveTopCodeItem } from '@/api/console/code'
 import { SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, SUCCESS_TIP_TITLE, WARNING_TIP_TITLE } from '@/utils/constant'
 
 export default {
