@@ -1,126 +1,124 @@
 <template>
   <div class="app-container">
     <el-card>
-      <div>
-          <el-row>
-            <el-col :span="4"><p class="legend-title">基础信息</p></el-col>
-            <el-col :offset="18" :span="2">
-              <el-button type="primary" @click.native="save">保存</el-button>
-            </el-col>
-          </el-row>
-        <el-form @submit.native.prevent :model="company" ref="companyForm" :rules="companyRules" label-width="80px">
-          <el-row :gutter="32">
-            <el-col :span="12">
-              <el-form-item label="公司名称" prop="name">
-                <el-input v-model="company.name"></el-input>
-              </el-form-item>
-              <el-form-item label="行业类别" prop="industryCategory">
-                <el-cascader style="width:100%"
-                  expand-trigger="hover"
-                  :options="industryCategorys"
-                  clearable
-                  :props="selProps"
-                  v-model="company.industryCategory">
-                </el-cascader>
-              </el-form-item>
-              <el-form-item label="区域" prop="area">
-                <el-cascader style="width:100%"
-                  expand-trigger="hover"
-                  :options="areas"
-                  clearable
-                  :props="selProps"
-                  v-model="company.area">
-                </el-cascader>
-              </el-form-item>
-              <el-form-item label="邮编" prop="postcode">
-                <el-input v-model="company.postcode" placeholder="请输入邮编"></el-input>
-              </el-form-item>
-              <el-row>
-                <el-col :span="12">
-                  <el-form-item label="联系人" prop="linkmanName">
-                    <el-input v-model="company.linkmanName" placeholder="请输入联系人名字"></el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="职位" prop="linkmanPosition">
-                    <el-input v-model="company.linkmanPosition" placeholder="请输入联系人职位名称"></el-input>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-row>
-                <el-col :span="12">
-                  <el-form-item label="手机" prop="linkmanMobile">
-                    <el-input v-model="company.linkmanMobile" placeholder="请输入联系人手机号码"></el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="QQ" prop="linkmanQq">
-                    <el-input v-model="company.linkmanQq" placeholder="请输入联系人QQ号码"></el-input>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-form-item label="邮箱" prop="linkmanEmail">
-                <el-input v-model="company.linkmanEmail" placeholder="请输入联系人邮箱"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="公司logo">
-                <el-upload
-                  list-type="picture-card"
-                  :action="companyAvatarAction"
-                  :headers="companyAvatarHeader"
-                  class="avatar-uploader"
-                  :show-file-list="false"
-                  :on-success="handleAvatarSuccess"
-                  :before-upload="beforeAvatarUpload">
-                  <img v-if="avatar" :src="avatar" class="avatar">
-                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                </el-upload>
-              </el-form-item>
-              <el-form-item label="详细地址" prop="address">
-                <el-input v-model="company.address" placeholder="请输入公司详细地址"></el-input>
-              </el-form-item>
-              <el-row>
-                <el-col :span="12">
-                  <el-form-item label="电话" prop="tel">
-                    <el-input v-model="company.tel" placeholder="请输入公司电话"></el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="传真" prop="fax">
-                    <el-input v-model="company.fax" placeholder="请输入公司传真"></el-input>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-              <el-form-item label="公司网址" prop="webSite">
-                <el-input v-model="company.webSite" placeholder="请输入公司网址"></el-input>
-              </el-form-item>
-              <el-form-item label="公司介绍" prop="descn">
-                <el-input type="textarea" :rows="2" v-model="company.descn" placeholder="请输入公司简介"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <p class="legend-title">财务信息</p>
-          <el-row :gutter="32">
-            <el-col :span="12">
-              <el-form-item label="纳税人识别号" prop="nsrsbh">
-                <el-input v-model="company.nsrsbh" placeholder="请输入纳税人识别号"></el-input>
-              </el-form-item>
-              <el-form-item label="发票抬头" prop="invoiceTitle">
-                <el-input v-model="company.invoiceTitle" placeholder="请输入发票抬头"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <p class="legend-title">服务支持设置</p>
-          <el-row :gutter="32">
-            <el-col :span="12">
-              <el-form-item label="服务热线" prop="serviceTel">
-                <el-input v-model="company.serviceTel" placeholder="请输入服务热线"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-      </div>
+      <el-row>
+        <el-col :span="4"><p class="legend-title">基础信息</p></el-col>
+        <el-col :offset="18" :span="2">
+          <el-button type="primary" @click.native="save">保存</el-button>
+        </el-col>
+      </el-row>
+      <el-form @submit.native.prevent :model="company" ref="companyForm" :rules="companyRules" label-width="80px">
+        <el-row :gutter="32">
+          <el-col :span="12">
+            <el-form-item label="公司名称" prop="name">
+              <el-input v-model="company.name"></el-input>
+            </el-form-item>
+            <el-form-item label="行业类别" prop="industryCategory">
+              <el-cascader style="width:100%"
+                expand-trigger="hover"
+                :options="industryCategorys"
+                clearable
+                :props="selProps"
+                v-model="company.industryCategory">
+              </el-cascader>
+            </el-form-item>
+            <el-form-item label="区域" prop="area">
+              <el-cascader style="width:100%"
+                expand-trigger="hover"
+                :options="areas"
+                clearable
+                :props="selProps"
+                v-model="company.area">
+              </el-cascader>
+            </el-form-item>
+            <el-form-item label="邮编" prop="postcode">
+              <el-input v-model="company.postcode" placeholder="请输入邮编"></el-input>
+            </el-form-item>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="联系人" prop="linkmanName">
+                  <el-input v-model="company.linkmanName" placeholder="请输入联系人名字"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="职位" prop="linkmanPosition">
+                  <el-input v-model="company.linkmanPosition" placeholder="请输入联系人职位名称"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="手机" prop="linkmanMobile">
+                  <el-input v-model="company.linkmanMobile" placeholder="请输入联系人手机号码"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="QQ" prop="linkmanQq">
+                  <el-input v-model="company.linkmanQq" placeholder="请输入联系人QQ号码"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item label="邮箱" prop="linkmanEmail">
+              <el-input v-model="company.linkmanEmail" placeholder="请输入联系人邮箱"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="公司logo">
+              <el-upload
+                list-type="picture-card"
+                :action="companyAvatarAction"
+                :headers="companyAvatarHeader"
+                class="avatar-uploader"
+                :show-file-list="false"
+                :on-success="handleAvatarSuccess"
+                :before-upload="beforeAvatarUpload">
+                <img v-if="avatar" :src="avatar" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              </el-upload>
+            </el-form-item>
+            <el-form-item label="详细地址" prop="address">
+              <el-input v-model="company.address" placeholder="请输入公司详细地址"></el-input>
+            </el-form-item>
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="电话" prop="tel">
+                  <el-input v-model="company.tel" placeholder="请输入公司电话"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="传真" prop="fax">
+                  <el-input v-model="company.fax" placeholder="请输入公司传真"></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-form-item label="公司网址" prop="webSite">
+              <el-input v-model="company.webSite" placeholder="请输入公司网址"></el-input>
+            </el-form-item>
+            <el-form-item label="公司介绍" prop="descn">
+              <el-input type="textarea" :rows="2" v-model="company.descn" placeholder="请输入公司简介"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <p class="legend-title">财务信息</p>
+        <el-row :gutter="32">
+          <el-col :span="12">
+            <el-form-item label="纳税人识别号" prop="nsrsbh">
+              <el-input v-model="company.nsrsbh" placeholder="请输入纳税人识别号"></el-input>
+            </el-form-item>
+            <el-form-item label="发票抬头" prop="invoiceTitle">
+              <el-input v-model="company.invoiceTitle" placeholder="请输入发票抬头"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <p class="legend-title">服务支持设置</p>
+        <el-row :gutter="32">
+          <el-col :span="12">
+            <el-form-item label="服务热线" prop="serviceTel">
+              <el-input v-model="company.serviceTel" placeholder="请输入服务热线"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
     </el-card>
   </div>
 </template>

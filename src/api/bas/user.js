@@ -1,16 +1,22 @@
 import request from '@/utils/request'
 import { SCM_API_BASE } from '@/utils/constant'
 
-export function getUserInfo() {
+export function queryUserByPage(params) {
   return request({
-    url: SCM_API_BASE + '/bas/users/userinfo',
-    method: 'get'
+    url: SCM_API_BASE + '/bas/users',
+    method: 'get',
+    params: {
+      orderField: params.orderField,
+      order: params.order,
+      pageNum: params.pageNum,
+      pageSize: params.pageSize
+    }
   })
 }
 
-export function loadUser() {
+export function getUserInfo() {
   return request({
-    url: SCM_API_BASE + '/bas/users',
+    url: SCM_API_BASE + '/bas/users/userinfo',
     method: 'get'
   })
 }

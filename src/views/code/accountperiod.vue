@@ -1,30 +1,28 @@
 <template>
   <div class="app-container">
     <el-card>
-      <div>
-        <el-row :gutter="20">
-          <el-col :span="2" :offset="22">
-            <el-form @submit.native.prevent>
-              <el-form-item>
-                <el-button type="primary" size="small" :disabled="!actions.includes('addAccountPeriod')" @click="openAdd">新增</el-button>
-              </el-form-item>
-            </el-form>
-          </el-col>
-          <el-table :data="accountPeriods" border style="width: 100%;">
-            <el-table-column prop="name" label="名称" sortable>
-            </el-table-column>
-            <el-table-column label="操作" align="center" width="260">
-              <template slot-scope="scope">
-                <el-button-group>
-                  <el-button type="primary" :disabled="!actions.includes('editAccountPeriod')" icon="el-icon-edit" @click="openEdit(scope.row)" size="small">修改</el-button>
-                  <el-button type="primary" :disabled="!actions.includes('moveTopAccountPeriod')" icon="el-icon-upload2" @click="moveTop(scope.row.id)" size="small">置顶</el-button>
-                  <el-button type="danger" :disabled="!actions.includes('removeAccountPeriod')" icon="el-icon-remove" @click="remove(scope.row.id)" size="small">删除</el-button>
-                </el-button-group>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-row>
-      </div>
+      <el-row :gutter="20">
+        <el-col :span="2" :offset="22">
+          <el-form @submit.native.prevent>
+            <el-form-item>
+              <el-button type="primary" size="small" :disabled="!actions.includes('addAccountPeriod')" @click="openAdd">新增</el-button>
+            </el-form-item>
+          </el-form>
+        </el-col>
+        <el-table :data="accountPeriods" border style="width: 100%;">
+          <el-table-column prop="name" label="名称" sortable>
+          </el-table-column>
+          <el-table-column label="操作" align="center" width="260">
+            <template slot-scope="scope">
+              <el-button-group>
+                <el-button type="primary" :disabled="!actions.includes('editAccountPeriod')" icon="el-icon-edit" @click="openEdit(scope.row)" size="small">修改</el-button>
+                <el-button type="primary" :disabled="!actions.includes('moveTopAccountPeriod')" icon="el-icon-upload2" @click="moveTop(scope.row.id)" size="small">置顶</el-button>
+                <el-button type="danger" :disabled="!actions.includes('removeAccountPeriod')" icon="el-icon-remove" @click="remove(scope.row.id)" size="small">删除</el-button>
+              </el-button-group>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-row>
     </el-card>
     <!--编辑账期-->
     <el-dialog :title="formTitle" width="40%" :close-on-click-modal="false" :visible.sync="formVisible" :show-close="false">

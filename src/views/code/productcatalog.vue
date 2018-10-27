@@ -1,37 +1,39 @@
 <template>
   <div class="app-container">
-    <el-row :gutter="20">
-      <el-col :span="2" :offset="22">
-        <el-form @submit.native.prevent>
-          <el-form-item>
-            <el-button type="primary" @click="openAdd" size="small">新增</el-button>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
-    <el-table :data="productCatalogs" :show-header="false" highlight-current-row border style="width: 100%;">
-      <el-table-column>
-        <template slot-scope="scope">
-          <el-row>
-            <el-col :span="16">
-              <span v-html="scope.row.indent"></span>
-              <svg-icon :icon-class="scope.row.folderType" class-name="svn-icon-product-catalog"></svg-icon>
-              &nbsp;&nbsp;
-              <span v-if="scope.row.defaulted === 'F'">{{scope.row.name}}</span>
-              <span v-else>{{scope.row.name}}（系统默认，可改名，不可删除）</span>
-            </el-col>
-            <el-col :span="8">
-              <el-button-group>
-                <el-button type="primary" :disabled="scope.row.defaulted === 'T'" @click="openAddItem(scope.row)" icon="el-icon-plus" size="small">新增子类</el-button>
-                <el-button type="primary" @click="openEdit(scope.$index, scope.row)" icon="el-icon-edit" size="small">修改</el-button>
-                <el-button type="primary" icon="el-icon-upload2" @click="moveTop(scope.row)" size="small">置顶</el-button>
-                <el-button type="danger" :disabled="scope.row.defaulted === 'T'" @click="remove(scope.$index, scope.row.id)" icon="el-icon-remove" size="small">删除</el-button>
-              </el-button-group>
-            </el-col>
-          </el-row>
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-card>
+      <el-row :gutter="20">
+        <el-col :span="2" :offset="22">
+          <el-form @submit.native.prevent>
+            <el-form-item>
+              <el-button type="primary" @click="openAdd" size="small">新增</el-button>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
+      <el-table :data="productCatalogs" :show-header="false" highlight-current-row border style="width: 100%;">
+        <el-table-column>
+          <template slot-scope="scope">
+            <el-row>
+              <el-col :span="16">
+                <span v-html="scope.row.indent"></span>
+                <svg-icon :icon-class="scope.row.folderType" class-name="svn-icon-product-catalog"></svg-icon>
+                &nbsp;&nbsp;
+                <span v-if="scope.row.defaulted === 'F'">{{scope.row.name}}</span>
+                <span v-else>{{scope.row.name}}（系统默认，可改名，不可删除）</span>
+              </el-col>
+              <el-col :span="8">
+                <el-button-group>
+                  <el-button type="primary" :disabled="scope.row.defaulted === 'T'" @click="openAddItem(scope.row)" icon="el-icon-plus" size="small">新增子类</el-button>
+                  <el-button type="primary" @click="openEdit(scope.$index, scope.row)" icon="el-icon-edit" size="small">修改</el-button>
+                  <el-button type="primary" icon="el-icon-upload2" @click="moveTop(scope.row)" size="small">置顶</el-button>
+                  <el-button type="danger" :disabled="scope.row.defaulted === 'T'" @click="remove(scope.$index, scope.row.id)" icon="el-icon-remove" size="small">删除</el-button>
+                </el-button-group>
+              </el-col>
+            </el-row>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
     <!-- 编辑 -->
     <el-dialog :title="formTitle" :visible.sync="formVisible" width="40%" :close-on-click-modal="false">
       <el-form :model="productCatalog" :rules="formRules" label-width="80px" ref="form">
@@ -136,7 +138,6 @@ export default {
     load: function() {
       loadProductCatalog().then(res => {
         this.productCatalogs = res.data
-        console.log(JSON.stringify(this.appCascadePathCode))
         this.productCatalogs.forEach(item => {
           item.depth = this.appCascadePathCode.productCatalog[item.id].path.length
           let isLeaf = true

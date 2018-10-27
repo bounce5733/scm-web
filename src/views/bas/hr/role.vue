@@ -111,6 +111,14 @@ export default {
       loadRole().then(res => {
         this.roles = res.data
         this.selRoleid = this.roles[0].id
+        roleMenus(this.roles[0].id).then(res => {
+          res.data.forEach(item => {
+            const key = item.menuKey.substr(0, item.menuKey.indexOf('_'))
+            if (this.checkList[key]) {
+              this.checkList[key].push(item.actionKey)
+            }
+          })
+        })
       })
     },
     saveRole: function() {
