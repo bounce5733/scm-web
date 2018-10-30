@@ -21,11 +21,11 @@ export function getUserInfo() {
   })
 }
 
-export function addUser(data) {
+export function addUser(user, roleids) {
   return request({
     url: SCM_API_BASE + '/bas/users',
     method: 'post',
-    data: data
+    data: { user: user, roleids: roleids }
   })
 }
 

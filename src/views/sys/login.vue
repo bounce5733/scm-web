@@ -42,7 +42,7 @@
     </div>
 
     <!--注册-->
-    <el-dialog :title="registerTitle" :close-on-click-modal="false" :visible.sync="registerFormVisible">
+    <el-dialog :title="registerTitle" width="57%" :close-on-click-modal="false" :visible.sync="registerFormVisible">
       <el-form :model="registerInfo" ref="registerForm" :rules="registerRules" label-width="100px">
         <el-row>
           <el-col :span="12">
@@ -72,6 +72,14 @@
           <el-col :span="12">
             <el-form-item label="密码" prop="password">
               <el-input type="password" v-model="registerInfo.password"></el-input>
+              <el-tag size="mini" color="#e9ecf3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span :style="{color: pwdColor.weak}">弱</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-tag>
+              <el-tag size="mini" color="#e9ecf3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span :style="{color: pwdColor.middle}">中</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-tag>
+              <el-tag size="mini" color="#e9ecf3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span :style="{color: pwdColor.strong}">强</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-tag>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="确认密码" prop="confirmPassword">
+              <el-input :disabled="!pwdValid" type="password" v-model="registerInfo.confirmPassword"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -92,14 +100,58 @@ import { validateMobile, validatePassword } from '@/utils/validate'
 export default {
   data() {
     const checkPassword = (rule, value, callback) => {
-      if (value !== undefined && value !== '') {
-        if (!validatePassword(value)) {
-          callback(new Error('密码必须6-20位，由英文字母或数字组成'))
+      const flag = validatePassword(value)
+      if (flag < 4) {
+        this.pwdColor = {
+          weak: '#fff',
+          middle: '#fff',
+          strong: '#fff'
         }
-        callback()
+        this.pwdValid = false
       } else {
-        return callback(new Error('密码不能为空'))
+        this.pwdValid = true
       }
+      switch (flag) {
+        case 0:
+          return callback(new Error('密码不能为空或空字符串'))
+        case 1:
+          return callback(new Error('密码长度必须6-20位'))
+        case 2:
+          return callback(new Error('密码只能包含大小写英文字符与数字'))
+        case 3:
+          return callback(new Error('密码至少数字或大小写字母两种类型'))
+        case 4:
+          this.pwdColor = {
+            weak: 'green',
+            middle: '#fff',
+            strong: '#fff'
+          }
+          break
+        case 5:
+          this.pwdColor = {
+            weak: 'green',
+            middle: 'green',
+            strong: '#fff'
+          }
+          break
+        case 6:
+          this.pwdColor = {
+            weak: 'green',
+            middle: 'green',
+            strong: 'green'
+          }
+          break
+      }
+      callback()
+    }
+    const checkConfirmPassword = (rule, value, callback) => {
+      if (value === undefined || value.trim().length === 0) {
+        return callback(new Error('确认密码不能为空'))
+      } else if (value.trim() !== this.registerInfo.password.trim()) {
+        this.registerInfo.confirmPassword = ''
+        return callback(new Error('确认密码错误，请重新输入'))
+      }
+      callback()
     }
     const checkMobile = (rule, value, callback) => {
       if (value !== undefined && value !== '') {
@@ -142,9 +194,18 @@ export default {
           { required: true, trigger: 'blur', validator: checkMobile }
         ],
         password: [
-          { required: true, trigger: 'blur', validator: checkPassword }
+          { required: true, validator: checkPassword, trigger: 'change' }
+        ],
+        confirmPassword: [
+          { required: true, validator: checkConfirmPassword, trigger: 'blur' }
         ]
-      }
+      },
+      pwdColor: {
+        weak: '#fff',
+        middle: '#fff',
+        strong: '#fff'
+      },
+      pwdValid: false
     }
   },
   methods: {
@@ -174,6 +235,7 @@ export default {
     register: function() {
       this.$refs.registerForm.validate((valid) => {
         if (valid) {
+          delete this.registerInfo.confirmPassword
           register(this.registerInfo).then(res => {
             if (res.status === 204) {
               this.$notify({

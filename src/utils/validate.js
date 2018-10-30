@@ -32,7 +32,7 @@ export function validateAlphabets(str) {
  * @returns {boolean}
  */
 export function validateEmail(email) {
-  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  const re = /^(([^<>()\[\]\\.,:\s@"]+(\.[^<>()\[\]\\.,:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return re.test(email)
 }
 
@@ -57,9 +57,45 @@ export function validateTel(tel) {
 }
 
 export function validatePassword(pwd) {
-  if (pwd.length >= 6 && pwd.length <= 20 && (pwd.match(/[\da-zA-Z]+/) || pwd.match(/\d+/))) {
-    return true
+  // 判断是否为空或空字符串
+  if (pwd === undefined || pwd.trim().length === 0) {
+    return 0 // 密码不能为空或空字符串
   }
-  return false
+  const value = pwd.trim()
+  const valueLength = value.length
+  let codeLength = 0
+  // 判断长度是否达标
+  if (valueLength < 6 || valueLength > 20) {
+    return 1 // 密码长度必须6-20位
+  }
+
+  // 判断是否存在其他字符
+  if (/\s/.test(value) || /[^a-zA-Z0-9]/.test(value)) {
+    return 2 // 密码只能包含大小写英文字符与数字
+  }
+
+  // 判断是否存在两种类型
+  if (/[0-9]/.test(value)) {
+    codeLength++
+  }
+  if (/[a-z]/.test(value)) {
+    codeLength++
+  }
+  if (/[A-Z]/.test(value)) {
+    codeLength++
+  }
+
+  if (codeLength < 2) {
+    return 3 // 密码至少数字或大小写字母两种类型
+  }
+
+  // 密码复合要求，判断强度
+  if (valueLength < 10) {
+    return 4
+  } else if (valueLength >= 10 && valueLength < 15) {
+    return 5
+  } else {
+    return 6
+  }
 }
 
