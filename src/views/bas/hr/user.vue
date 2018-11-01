@@ -13,22 +13,22 @@
       <el-table-column prop="account" label="账号" sortable></el-table-column>
       <el-table-column prop="name" label="姓名" sortable></el-table-column>
       <el-table-column prop="position" label="职位" sortable></el-table-column>
-      <el-table-column prop="deptid" label="部门" sortable></el-table-column>
+      <el-table-column prop="deptid" :formatter="formatDeptCol" label="部门" sortable></el-table-column>
       <el-table-column prop="mobile" label="手机" sortable></el-table-column>
       <el-table-column prop="email" label="邮箱" sortable></el-table-column>
-      <!--
       <el-table-column label="操作" align="center" width="60">
         <template slot-scope="scope">
-          <el-dropdown placement="bottom" @command="handleAction" @visible-change="customerGrade = Object.assign({}, scope.row)">
+          <el-dropdown placement="bottom" @command="handleAction" @visible-change="user = Object.assign({}, scope.row)">
             <i class="el-icon-more"></i>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="edit"><i class="el-icon-edit"></i>&nbsp;修改</el-dropdown-item>
-              <el-dropdown-item command="disable" divided><i class="el-icon-remove"></i>&nbsp;禁用</el-dropdown-item>
+              <el-dropdown-item command="enable" v-if="scope.row.enabled === 'T'" :disabled="scope.row.isCompanyCreater === 'T'" divided><i class="el-icon-circle-close"></i>&nbsp;禁用</el-dropdown-item>
+              <el-dropdown-item command="enable" v-else divided><i class="el-icon-circle-check"></i>&nbsp;启用</el-dropdown-item>
+              <el-dropdown-item command="remove" v-if="scope.row.enabled === 'F'" divided><i class="el-icon-delete"></i>&nbsp;删除</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
       </el-table-column>
-      -->
     </el-table>
     <el-pagination layout="prev, pager, next" @current-change="pageChange" :current-page="params.pageNum" :page-size="params.pageSize" :total="total" style="float:right;">
     </el-pagination>
@@ -39,16 +39,23 @@
         <p class="legend-title">基础信息</p>
         <el-row>
           <el-col :span="16">
-            <el-form-item label="登录账号" prop="account">
-              <el-input v-model="user.account"></el-input>
-            </el-form-item>
-            <el-form-item label="密码" prop="pwd">
+            <el-row>
+              <el-col :span="20">
+                <el-form-item label="登录账号" prop="account">
+                  <el-input v-model="user.account"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="4">
+                &nbsp;&nbsp;&nbsp;&nbsp;<el-button v-if="formTitle === '编辑'" type="text" @click="openResetPwd">重置密码</el-button>
+              </el-col>
+            </el-row>
+            <el-form-item v-if="formTitle === '新增'" label="密码" prop="pwd">
               <el-input type="password" v-model="user.pwd"></el-input>
               <el-tag size="mini" color="#e9ecf3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span :style="{color: pwdColor.weak}">弱</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-tag>
               <el-tag size="mini" color="#e9ecf3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span :style="{color: pwdColor.middle}">中</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-tag>
               <el-tag size="mini" color="#e9ecf3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span :style="{color: pwdColor.strong}">强</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-tag>
             </el-form-item>
-            <el-form-item label="确认密码" prop="confirmPwd">
+            <el-form-item v-if="formTitle === '新增'" label="确认密码" prop="confirmPwd">
               <el-input :disabled="!pwdValid" type="password" v-model="user.confirmPwd"></el-input>
             </el-form-item>
             <el-row>
@@ -63,14 +70,14 @@
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-form-item label="部门" prop="deptid">
+            <el-form-item label="部门" prop="deptids">
               <el-cascader style="width:100%"
                 expand-trigger="hover"
                 :show-all-levels="false"
                 :options="depts"
                 clearable
                 :props="selProps"
-                v-model="user.deptid">
+                v-model="user.deptids">
               </el-cascader>
             </el-form-item>
             <el-form-item label="职位" prop="position">
@@ -106,7 +113,7 @@
           </el-tooltip>
         </p>
         <el-form-item label="账号权限">
-          <el-checkbox-group v-model="user.roles">
+          <el-checkbox-group v-model="user.roleids">
             <el-row v-for="items,index in roles" :key="index">
               <el-checkbox v-for="role in items" :key="role.id" :label="role.id" @change="roleChecked">{{role.name}}</el-checkbox>
             </el-row>
@@ -138,15 +145,37 @@
         <el-button type="primary" @click="save">确认</el-button>
       </div>
     </el-dialog>
+
+    <!--重置密码-->
+    <el-dialog title="重置密码" width="40%" :close-on-click-modal="false" :visible.sync="resetPwdFormVisible">
+      <el-form :model="resetPwd" ref="resetPwdForm" :rules="resetPwdRules" label-width="80px">
+        <el-form-item label="账号" prop="account">
+          <el-input disabled v-model="resetPwd.account"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="pwd">
+          <el-input type="password" v-model="resetPwd.pwd"></el-input>
+          <el-tag size="mini" color="#e9ecf3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span :style="{color: pwdColor.weak}">弱</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-tag>
+          <el-tag size="mini" color="#e9ecf3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span :style="{color: pwdColor.middle}">中</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-tag>
+          <el-tag size="mini" color="#e9ecf3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span :style="{color: pwdColor.strong}">强</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</el-tag>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPwd">
+          <el-input :disabled="!pwdValid" type="password" v-model="resetPwd.confirmPwd"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native="cancelResetPwdForm">取消</el-button>
+        <el-button type="primary" @click.native="savePwd">确认</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { queryUserByPage, addUser } from '@/api/bas/user'
-import { validateMobile, validatePassword, validateEmail, validateQQ } from '@/utils/validate'
+import { queryUserByPage, addUser, enableUser, removeUser, resetPwd } from '@/api/bas/user'
 import { loadRole, roleMenus } from '@/api/bas/role'
-import { SUCCESS_TIP_TITLE, SAVE_SUCCESS } from '@/utils/constant'
+import { validateMobile, validatePassword, validateEmail, validateQQ } from '@/utils/validate'
+import { SUCCESS_TIP_TITLE, SAVE_SUCCESS, REMOVE_SUCCESS, WARNING_TIP_TITLE } from '@/utils/constant'
 import md5 from 'js-md5'
 
 export default {
@@ -202,6 +231,15 @@ export default {
         return callback(new Error('确认密码不能为空'))
       } else if (value.trim() !== this.user.pwd.trim()) {
         this.user.confirmPwd = ''
+        return callback(new Error('确认密码错误，请重新输入'))
+      }
+      callback()
+    }
+    const checkResetPwdConfirmPassword = (rule, value, callback) => {
+      if (value === undefined || value.trim().length === 0) {
+        return callback(new Error('确认密码不能为空'))
+      } else if (value.trim() !== this.resetPwd.pwd.trim()) {
+        this.resetPwd.confirmPwd = ''
         return callback(new Error('确认密码错误，请重新输入'))
       }
       callback()
@@ -270,7 +308,7 @@ export default {
         mobile: [
           { required: true, trigger: 'blur', validator: checkMobile }
         ],
-        deptid: [
+        deptids: [
           { required: true, message: '部门不能为空', trigger: 'blur' }
         ],
         position: [
@@ -285,7 +323,7 @@ export default {
       },
       formTitle: '',
       formVisible: false,
-      depts: this.$store.state.code.appCascadeCode.dept === undefined ? [] : this.$store.state.code.appCascadeCode.dept,
+      depts: [],
       pwdColor: {
         weak: '#fff',
         middle: '#fff',
@@ -295,12 +333,24 @@ export default {
       roles: [],
       roleCheckList: { code: [], console: [], bas: [], sys: [] },
       modelKeyName: {}, // 顶级模块名值对
-      modelHeight: {} // 权限选择模块背景高度
+      modelHeight: {}, // 权限选择模块背景高度
+      // ------重置密码------
+      resetPwd: {},
+      resetPwdFormVisible: false,
+      resetPwdRules: {
+        password: [
+          { required: true, validator: checkPassword, trigger: 'change' }
+        ],
+        confirmPassword: [
+          { required: true, validator: checkResetPwdConfirmPassword, trigger: 'blur' }
+        ]
+      }
     }
   },
   computed: {
     ...mapGetters([
-      'sysMenuActions'
+      'sysMenuActions',
+      'appCascadePathCode'
     ]),
     appActions() {
       // 按名称中分割线划分大类
@@ -354,6 +404,25 @@ export default {
       this.params.pageNum = val
       this.queryByPage()
     },
+    handleAction: function(action) {
+      switch (action) {
+        case 'edit':
+          this.openEdit()
+          break
+        case 'enable':
+          this.enable()
+          break
+        case 'remove':
+          this.remove()
+      }
+    },
+    formatDeptCol: function(row, column, cellValue, index) {
+      if (cellValue !== 0) {
+        return this.appCascadePathCode.dept[cellValue].name
+      } else {
+        return ''
+      }
+    },
     // ------编辑------
     openAdd: function() {
       loadRole().then(res => {
@@ -367,7 +436,8 @@ export default {
             this.roles[rowcount].push(role)
           }
         })
-        this.user = { roles: [] }
+        this.user = { roleids: [] }
+        this.depts = this.$store.state.code.appCascadeCode.dept === undefined ? [] : this.$store.state.code.appCascadeCode.dept
         this.pwdColor = {
           weak: '#fff',
           middle: '#fff',
@@ -378,28 +448,74 @@ export default {
         this.formVisible = true
       })
     },
+    openEdit: function() {
+      if (this.appCascadePathCode.dept[this.user.deptid]) {
+        this.user.deptids = this.appCascadePathCode.dept[this.user.deptid].path
+      }
+      this.depts = this.$store.state.code.appCascadeCode.dept === undefined ? [] : this.$store.state.code.appCascadeCode.dept
+      this.formTitle = '编辑'
+      this.formVisible = true
+    },
+    enable: function() {
+      const tip = this.user.enabled === 'T' ? '禁用' : '启用'
+      this.$confirm('确定' + tip + '用户 [' + this.user.name + ']', '提示', { type: 'warning' }).then(() => {
+        enableUser(this.user).then(res => {
+          this.queryByPage()
+        })
+      }).catch(() => {})
+    },
+    remove: function() {
+      this.$confirm('确定删除用户 [' + this.user.name + ']', '提示', { type: 'warning' }).then(() => {
+        removeUser(this.user.id).then(res => {
+          this.$notify({
+            title: SUCCESS_TIP_TITLE,
+            message: REMOVE_SUCCESS,
+            type: 'success'
+          })
+          this.queryByPage()
+        })
+      }).catch(() => {})
+    },
     save: function() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          const roleids = this.user.roles
-          delete this.user.confirmPwd
-          delete this.user.roles
-          this.user.deptid = this.user.deptid[0]
-          this.user.pwd = md5(this.user.pwd)
-          addUser(this.user, roleids).then(res => {
+          if (this.user.roleids.length === 0) {
             this.$notify({
-              title: SUCCESS_TIP_TITLE,
-              message: SAVE_SUCCESS,
-              type: 'success'
+              title: WARNING_TIP_TITLE,
+              message: '至少需要一个权限',
+              type: 'warning'
             })
-            this.queryByPage()
-            this.cancelForm()
+            return
+          }
+          const tmpPwd = this.user.pwd
+          const tmpConfirmPwd = this.user.confirmPwd
+          this.user.pwd = md5(this.user.pwd)
+          delete this.user.confirmPwd
+          addUser(this.user).then(res => {
+            if (res.status === 302) {
+              this.$notify({
+                title: WARNING_TIP_TITLE,
+                message: '账号已经存在，请更换账号',
+                type: 'warning'
+              })
+              this.user.pwd = tmpPwd
+              this.user.confirmPwd = tmpConfirmPwd
+              this.user.account = ''
+            } else {
+              this.$notify({
+                title: SUCCESS_TIP_TITLE,
+                message: SAVE_SUCCESS,
+                type: 'success'
+              })
+              this.queryByPage()
+              this.cancelForm()
+            }
           })
         }
       })
     },
     roleChecked: function() {
-      this.user.roles.forEach(roleid => {
+      this.user.roleids.forEach(roleid => {
         this.roleCheckList = { code: [], console: [], bas: [], sys: [] }
         roleMenus(roleid).then(res => {
           res.data.forEach(item => {
@@ -414,6 +530,37 @@ export default {
     cancelForm: function() {
       this.$refs.form.resetFields()
       this.formVisible = false
+    },
+    // ------重置密码------
+    openResetPwd: function() {
+      this.resetPwd = { id: this.user.id, account: this.user.account }
+      this.pwdColor = {
+        weak: '#fff',
+        middle: '#fff',
+        strong: '#fff'
+      }
+      this.pwdValid = false
+      this.resetPwdFormVisible = true
+    },
+    savePwd: function() {
+      this.$refs.resetPwdForm.validate(valid => {
+        if (valid) {
+          delete this.resetPwd.confirmPwd
+          this.resetPwd.pwd = md5(this.resetPwd.pwd)
+          resetPwd(this.resetPwd).then(res => {
+            this.$notify({
+              title: SUCCESS_TIP_TITLE,
+              message: SAVE_SUCCESS,
+              type: 'success'
+            })
+            this.cancelResetPwdForm()
+          })
+        }
+      })
+    },
+    cancelResetPwdForm: function() {
+      this.$refs.resetPwdForm.resetFields()
+      this.resetPwdFormVisible = false
     }
   },
   mounted() {

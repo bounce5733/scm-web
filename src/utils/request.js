@@ -26,21 +26,35 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(
   response => response,
   error => {
-    if (error.response === undefined || error.response.status === 401) {
-      sessionStorage.removeItem(TOKEN_KEY)
+    if (error.response !== undefined) {
+      switch (error.response.status) {
+        case 401:
+          Message({
+            message: '会话过期，请重新登录',
+            type: 'warning',
+            duration: TIP_DURATION_TIME
+          })
+          sessionStorage.removeItem(TOKEN_KEY)
+          router.push('/login')
+          break
+        case 302:
+          return Promise.resolve(error.response)
+        default:
+          console.log('err' + error) // for debug
+          Message({
+            message: error.message,
+            type: 'error',
+            duration: TIP_DURATION_TIME
+          })
+      }
+    } else {
       Message({
         message: '会话过期，请重新登录',
         type: 'warning',
         duration: TIP_DURATION_TIME
       })
+      sessionStorage.removeItem(TOKEN_KEY)
       router.push('/login')
-    } else {
-      console.log('err' + error)// for debug
-      Message({
-        message: error.message,
-        type: 'error',
-        duration: TIP_DURATION_TIME
-      })
     }
     return Promise.reject(error)
   })

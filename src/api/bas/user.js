@@ -21,11 +21,11 @@ export function getUserInfo() {
   })
 }
 
-export function addUser(user, roleids) {
+export function addUser(user) {
   return request({
     url: SCM_API_BASE + '/bas/users',
     method: 'post',
-    data: { user: user, roleids: roleids }
+    data: user
   })
 }
 
@@ -34,6 +34,14 @@ export function editUser(data) {
     url: SCM_API_BASE + '/bas/users',
     method: 'patch',
     data: data
+  })
+}
+
+export function enableUser(user) {
+  return request({
+    url: SCM_API_BASE + '/bas/users/enable',
+    method: 'patch',
+    data: user
   })
 }
 
@@ -56,5 +64,13 @@ export function roleUsers(roleid) {
   return request({
     url: SCM_API_BASE + '/bas/users/role/' + roleid,
     method: 'get'
+  })
+}
+
+export function resetPwd(user) {
+  return request({
+    url: SCM_API_BASE + '/bas/users/resetPwd',
+    method: 'patch',
+    data: user
   })
 }
