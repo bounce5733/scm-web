@@ -20,7 +20,7 @@
         <el-table-column prop="code" label="仓库编码" sortable></el-table-column>
         <el-table-column prop="address" label="仓库地址" sortable></el-table-column>
         <el-table-column prop="enabled" :formatter="formatterEnabledCol" label="状态" sortable></el-table-column>
-        <el-table-column label="操作" align="center" width="60">
+        <el-table-column fixed="right" align="center" width="60">
           <template slot-scope="scope">
             <el-dropdown placement="bottom" @command="handleAction" @visible-change="warehouse = Object.assign({}, scope.row)">
               <i class="el-icon-more"></i>

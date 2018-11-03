@@ -6,7 +6,7 @@ export function queryUserByPage(params) {
     url: SCM_API_BASE + '/bas/users',
     method: 'get',
     params: {
-      orderField: params.orderField,
+      orderField: params.orderField === null ? '' : params.orderField,
       order: params.order,
       pageNum: params.pageNum,
       pageSize: params.pageSize
@@ -29,11 +29,11 @@ export function addUser(user) {
   })
 }
 
-export function editUser(data) {
+export function editUser(user) {
   return request({
     url: SCM_API_BASE + '/bas/users',
     method: 'patch',
-    data: data
+    data: user
   })
 }
 

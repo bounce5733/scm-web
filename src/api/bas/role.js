@@ -56,7 +56,14 @@ export function roleMenus(roleid) {
 
 export function userMenus(userid) {
   return request({
-    url: SCM_API_BASE + '/bas/roles/usermenus/' + userid,
+    url: SCM_API_BASE + '/bas/roles/userMenus/' + userid,
+    method: 'get'
+  })
+}
+
+export function userRoles(userid) {
+  return request({
+    url: SCM_API_BASE + '/bas/roles/userRoles/' + userid,
     method: 'get'
   })
 }

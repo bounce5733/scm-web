@@ -10,7 +10,7 @@ export function queryOptlogByPage(optType, isme, startTime, endTime, params) {
       isme: isme,
       startTime: startTime,
       endTime: endTime,
-      orderField: params.orderField,
+      orderField: params.orderField === null ? '' : params.orderField,
       order: params.order,
       pageNum: params.pageNum,
       pageSize: params.pageSize

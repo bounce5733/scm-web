@@ -116,8 +116,9 @@ export default {
       this.params.pageNum = val
       this.queryByPage()
     },
-    sortData: function(sortobj) {
-      this.params.order = sortobj.order === null ? '' : sortobj.order === 'ascending' ? 'asc' : 'desc'
+    sortData: function({ column, prop, order }) {
+      this.params.order = order === null ? '' : order === 'ascending' ? 'asc' : 'desc'
+      this.params.orderField = prop
       this.queryByPage()
     }
   },

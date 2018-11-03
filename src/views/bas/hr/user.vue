@@ -9,19 +9,19 @@
         </el-form>
       </el-col>
     </el-row>
-    <el-table :data="users" border style="width: 100%;">
+    <el-table :data="users" border style="width: 100%;" @sort-change="sortData" @cell-mouse-enter="assignUser" :row-class-name="tableRowClassName">
       <el-table-column prop="account" label="账号" sortable></el-table-column>
       <el-table-column prop="name" label="姓名" sortable></el-table-column>
       <el-table-column prop="position" label="职位" sortable></el-table-column>
       <el-table-column prop="deptid" :formatter="formatDeptCol" label="部门" sortable></el-table-column>
       <el-table-column prop="mobile" label="手机" sortable></el-table-column>
       <el-table-column prop="email" label="邮箱" sortable></el-table-column>
-      <el-table-column label="操作" align="center" width="60">
+      <el-table-column fixed="right" align="center" width="60">
         <template slot-scope="scope">
-          <el-dropdown placement="bottom" @command="handleAction" @visible-change="user = Object.assign({}, scope.row)">
+          <el-dropdown placement="bottom" @command="handleAction">
             <i class="el-icon-more"></i>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="edit"><i class="el-icon-edit"></i>&nbsp;修改</el-dropdown-item>
+              <el-dropdown-item command="edit" v-if="scope.row.enabled === 'T'"><i class="el-icon-edit"></i>&nbsp;修改</el-dropdown-item>
               <el-dropdown-item command="enable" v-if="scope.row.enabled === 'T'" :disabled="scope.row.isCompanyCreater === 'T'" divided><i class="el-icon-circle-close"></i>&nbsp;禁用</el-dropdown-item>
               <el-dropdown-item command="enable" v-else divided><i class="el-icon-circle-check"></i>&nbsp;启用</el-dropdown-item>
               <el-dropdown-item command="remove" v-if="scope.row.enabled === 'F'" divided><i class="el-icon-delete"></i>&nbsp;删除</el-dropdown-item>
@@ -42,7 +42,7 @@
             <el-row>
               <el-col :span="20">
                 <el-form-item label="登录账号" prop="account">
-                  <el-input v-model="user.account"></el-input>
+                  <el-input :disabled="formTitle === '编辑'" v-model="user.account"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="4">
@@ -66,15 +66,15 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item label="手机" prop="mobile">
-                  <el-input v-model="user.mobile"></el-input>
+                  <el-input :disabled="formTitle === '编辑'" v-model="user.mobile"></el-input>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-form-item label="部门" prop="deptids">
               <el-cascader style="width:100%"
                 expand-trigger="hover"
-                :show-all-levels="false"
                 :options="depts"
+                change-on-select
                 clearable
                 :props="selProps"
                 v-model="user.deptids">
@@ -172,10 +172,10 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { queryUserByPage, addUser, enableUser, removeUser, resetPwd } from '@/api/bas/user'
-import { loadRole, roleMenus } from '@/api/bas/role'
+import { queryUserByPage, addUser, editUser, enableUser, removeUser, resetPwd } from '@/api/bas/user'
+import { loadRole, roleMenus, userRoles, userMenus } from '@/api/bas/role'
 import { validateMobile, validatePassword, validateEmail, validateQQ } from '@/utils/validate'
-import { SUCCESS_TIP_TITLE, SAVE_SUCCESS, REMOVE_SUCCESS, WARNING_TIP_TITLE } from '@/utils/constant'
+import { SUCCESS_TIP_TITLE, SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, WARNING_TIP_TITLE } from '@/utils/constant'
 import md5 from 'js-md5'
 
 export default {
@@ -338,10 +338,10 @@ export default {
       resetPwd: {},
       resetPwdFormVisible: false,
       resetPwdRules: {
-        password: [
+        pwd: [
           { required: true, validator: checkPassword, trigger: 'change' }
         ],
-        confirmPassword: [
+        confirmPwd: [
           { required: true, validator: checkResetPwdConfirmPassword, trigger: 'blur' }
         ]
       }
@@ -350,7 +350,8 @@ export default {
   computed: {
     ...mapGetters([
       'sysMenuActions',
-      'appCascadePathCode'
+      'appCascadePathCode',
+      'appCascadeCode'
     ]),
     appActions() {
       // 按名称中分割线划分大类
@@ -423,8 +424,25 @@ export default {
         return ''
       }
     },
+    tableRowClassName: function({ row, rowIndex }) {
+      if (row.enabled === 'F') {
+        return 'disabled-row'
+      }
+      return ''
+    },
+    assignUser: function(row, column, cell, event) {
+      if (column.label === undefined) {
+        this.user = row
+      }
+    },
+    sortData: function({ column, prop, order }) {
+      this.params.order = order === null ? '' : order === 'ascending' ? 'asc' : 'desc'
+      this.params.orderField = prop
+      this.queryByPage()
+    },
     // ------编辑------
     openAdd: function() {
+      this.roleCheckList = { code: [], console: [], bas: [], sys: [] }
       loadRole().then(res => {
         let rowcount = -1
         res.data.forEach((role, index) => {
@@ -437,7 +455,7 @@ export default {
           }
         })
         this.user = { roleids: [] }
-        this.depts = this.$store.state.code.appCascadeCode.dept === undefined ? [] : this.$store.state.code.appCascadeCode.dept
+        this.depts = this.appCascadeCode.dept === undefined ? [] : this.appCascadeCode.dept
         this.pwdColor = {
           weak: '#fff',
           middle: '#fff',
@@ -449,12 +467,47 @@ export default {
       })
     },
     openEdit: function() {
-      if (this.appCascadePathCode.dept[this.user.deptid]) {
-        this.user.deptids = this.appCascadePathCode.dept[this.user.deptid].path
-      }
-      this.depts = this.$store.state.code.appCascadeCode.dept === undefined ? [] : this.$store.state.code.appCascadeCode.dept
-      this.formTitle = '编辑'
-      this.formVisible = true
+      this.roleCheckList = { code: [], console: [], bas: [], sys: [] }
+      loadRole().then(res => {
+        let rowcount = -1
+        res.data.forEach((role, index) => {
+          if (index % 4 === 0) {
+            rowcount++
+            this.roles[rowcount] = []
+            this.roles[rowcount].push(role)
+          } else {
+            this.roles[rowcount].push(role)
+          }
+        })
+        userRoles(this.user.id).then(subres => {
+          this.user.roleids = subres.data
+          userMenus(this.user.id).then(ssubres => {
+            const menuActionMap = ssubres.data
+            for (const key in menuActionMap) {
+              const moduleCode = key.substr(0, (key.indexOf('_')))
+              if (this.roleCheckList[moduleCode]) {
+                menuActionMap[key].forEach(userAction => {
+                  let hasExist = false
+                  this.roleCheckList[moduleCode].forEach(action => {
+                    if (userAction === action) {
+                      hasExist = true
+                    }
+                  })
+                  if (!hasExist) {
+                    this.roleCheckList[moduleCode].push(userAction)
+                  }
+                })
+              }
+            }
+          })
+          if (this.appCascadePathCode.dept[this.user.deptid]) {
+            this.user.deptids = Object.assign([], this.appCascadePathCode.dept[this.user.deptid].path)
+          }
+          this.depts = this.appCascadeCode.dept === undefined ? [] : this.appCascadeCode.dept
+          this.formTitle = '编辑'
+          this.formVisible = true
+        })
+      })
     },
     enable: function() {
       const tip = this.user.enabled === 'T' ? '禁用' : '启用'
@@ -487,30 +540,43 @@ export default {
             })
             return
           }
-          const tmpPwd = this.user.pwd
-          const tmpConfirmPwd = this.user.confirmPwd
-          this.user.pwd = md5(this.user.pwd)
-          delete this.user.confirmPwd
-          addUser(this.user).then(res => {
-            if (res.status === 302) {
-              this.$notify({
-                title: WARNING_TIP_TITLE,
-                message: '账号已经存在，请更换账号',
-                type: 'warning'
-              })
-              this.user.pwd = tmpPwd
-              this.user.confirmPwd = tmpConfirmPwd
-              this.user.account = ''
-            } else {
+          if (this.formTitle === '新增') {
+            const tmpPwd = this.user.pwd
+            const tmpConfirmPwd = this.user.confirmPwd
+            this.user.pwd = md5(this.user.pwd)
+            delete this.user.confirmPwd
+            addUser(this.user).then(res => {
+              if (res.status === 302) {
+                this.$notify({
+                  title: WARNING_TIP_TITLE,
+                  message: '账号已经存在，请更换账号',
+                  type: 'warning'
+                })
+                this.user.pwd = tmpPwd
+                this.user.confirmPwd = tmpConfirmPwd
+                this.user.account = ''
+              } else {
+                this.$notify({
+                  title: SUCCESS_TIP_TITLE,
+                  message: SAVE_SUCCESS,
+                  type: 'success'
+                })
+                this.queryByPage()
+                this.cancelForm()
+              }
+            })
+          } else {
+            this.user.deptid = this.user.deptids[this.user.deptids.length - 1]
+            editUser(this.user).then(res => {
               this.$notify({
                 title: SUCCESS_TIP_TITLE,
-                message: SAVE_SUCCESS,
+                message: EDIT_SUCCESS,
                 type: 'success'
               })
               this.queryByPage()
               this.cancelForm()
-            }
-          })
+            })
+          }
         }
       })
     },

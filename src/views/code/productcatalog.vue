@@ -173,12 +173,12 @@ export default {
     },
     openEdit: function(index, row) {
       this.productCatalog = Object.assign({}, row)
-      this.formTitle = '编辑'
       this.tmpPath = this.appCascadePathCode.productCatalog[row.id].path
       const path = Object.assign([], this.tmpPath)
       path.splice(-1, 1)
       this.productCatalog.path = path
       this.pcodes = this.appCascadeCode.productCatalog === undefined ? [] : this.appCascadeCode.productCatalog
+      this.formTitle = '编辑'
       this.formVisible = true
     },
     save: function() {
