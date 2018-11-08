@@ -7,6 +7,9 @@ export function queryUserByPage(params) {
     method: 'get',
     params: {
       orderField: params.orderField === null ? '' : params.orderField,
+      param: params.param,
+      status: params.status,
+      deptid: params.deptid,
       order: params.order,
       pageNum: params.pageNum,
       pageSize: params.pageSize

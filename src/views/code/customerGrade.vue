@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-card>
       <div>
-        <el-row :gutter="20">
+        <el-row>
           <el-col :span="2" :offset="22">
             <el-form @submit.native.prevent>
               <el-form-item>

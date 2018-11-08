@@ -4,11 +4,9 @@
     <el-row>
       选择角色&nbsp;&nbsp; 
       <el-select v-model="selRoleid" @change="roleChange">
-        <el-option v-for="item,index in roles" :key="item.id" :label="item.name" :value="item.id">
-          <span>{{ item.name }}</span>
-        </el-option>
+        <el-option v-for="item,index in roles" :key="item.id" :label="item.name" :value="item.id"></el-option>
       </el-select>&nbsp;&nbsp; 
-      <el-button icon="el-icon-edit" style="border:none;">修改角色名称</el-button>
+      <el-button icon="el-icon-edit" style="border:none;" @click="openModifyRoleName">修改角色名称</el-button>
       <div style="font-size:0.9em;font-weight:bold;">
         <dl style="line-height: 25px; color: rgb(147, 166, 183);">
         <dt>说明：</dt>
@@ -23,16 +21,16 @@
     <h3>角色权限明细</h3>
     <el-row v-for="val,key in appActions" :key="key">
       <el-col :span="4">
-        <div style="border-left: 1px solid #e7e9f1;border-bottom: 1px solid #e7e9f1;text-align:left;background-color:#eef1f9;font-size:14;font-weight:400;" :style="{lineHeight:modelHeight[key],height:modelHeight[key]}">
+        <div style="border: 1px solid #e7e9f1;text-align:center;background-color:#eef1f9;font-size:14;font-weight:400;" :style="{lineHeight:modelHeight[key],height:modelHeight[key]}">
           <span>{{ key | modelKeyToName }}</span>
         </div>
       </el-col>
       <el-col :span="20">
-        <div style="border-left: 1px solid #e7e9f1;border-bottom: 1px solid #e7e9f1;">
+        <div style="border: 1px solid #e7e9f1;">
           <el-checkbox-group v-for="item,index in val" :key="index" v-model="checkList[key]">
             <el-row>
               <el-col v-for="subitem,subindex in item" :key="subindex" :span="4">
-                <div style="padding-left:20px"><el-checkbox :label="subitem.key">{{subitem.name}}</el-checkbox></div>
+                <div style="padding-left:20px;line-height:20px;"><el-checkbox :label="subitem.key">{{subitem.name}}</el-checkbox></div>
               </el-col>
             </el-row>
           </el-checkbox-group>
@@ -43,13 +41,25 @@
     <el-row type="flex" justify="center">
       <el-button type="primary" @click="saveRole">保存</el-button>
     </el-row>
+    <!-- 修改角色名称 -->
+    <el-dialog title="修改角色名称" :visible.sync="nameRoleFormVisible" width="40%" :close-on-click-modal="false">
+      <el-form :model="nameRole" :rules="nameRoleRules" label-width="80px" ref="nameRoleForm">
+        <el-form-item label="角色名称" prop="name">
+          <el-input v-model="nameRole.name"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native="cancelModifyRoleForm">取消</el-button>
+        <el-button type="primary" @click.native="saveRoleName">确认</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { loadRole, roleMenus, assignMenus } from '@/api/bas/role'
-import { SUCCESS_TIP_TITLE, SAVE_SUCCESS } from '@/utils/constant'
+import { loadRole, roleMenus, editRole, assignMenus } from '@/api/bas/role'
+import { SUCCESS_TIP_TITLE, SAVE_SUCCESS, EDIT_SUCCESS } from '@/utils/constant'
 
 export default {
   data() {
@@ -58,7 +68,16 @@ export default {
       selRoleid: undefined,
       checkList: { code: [], console: [], bas: [], sys: [] },
       modelKeyName: {}, // 顶级模块名值对
-      modelHeight: {} // 权限选择模块背景高度
+      modelHeight: {}, // 权限选择模块背景高度
+      // ------修改名称------
+      nameRole: {},
+      nameRoleRules: {
+        name: [
+          { required: true, message: '角色名称不能为空', trigger: 'blur' },
+          { max: 64, message: '最大长度64个字符', trigger: 'blur' }
+        ]
+      },
+      nameRoleFormVisible: false
     }
   },
   computed: {
@@ -82,8 +101,9 @@ export default {
       const result = {}
       for (const key in actionMap) {
         result[key] = []
-        this.modelHeight[key] = actionMap[key].length * 5 + 'px'
-        for (let i = 0; i <= actionMap[key].length / 5; i++) {
+        const line = parseInt(actionMap[key].length / 5) + 1
+        this.modelHeight[key] = line * 25.3 + 'px'
+        for (let i = 0; i <= line; i++) {
           result[key][i] = actionMap[key].slice(i * 5, i * 5 + 5)
         }
       }
@@ -110,7 +130,9 @@ export default {
     load: function() {
       loadRole().then(res => {
         this.roles = res.data
-        this.selRoleid = this.roles[0].id
+        if (!this.selRoleid) {
+          this.selRoleid = this.roles[0].id
+        }
         roleMenus(this.roles[0].id).then(res => {
           res.data.forEach(item => {
             const key = item.menuKey.substr(0, item.menuKey.indexOf('_'))
@@ -173,6 +195,39 @@ export default {
           }
         })
       })
+    },
+    // ------修改名称------
+    openModifyRoleName: function() {
+      this.roles.forEach(role => {
+        if (role.id === this.selRoleid) {
+          this.nameRole = { id: this.selRoleid, name: role.name }
+        }
+      })
+      this.nameRoleFormVisible = true
+    },
+    saveRoleName: function() {
+      this.$refs.nameRoleForm.validate(valid => {
+        if (valid) {
+          editRole(this.nameRole).then(res => {
+            this.$notify({
+              title: SUCCESS_TIP_TITLE,
+              message: EDIT_SUCCESS,
+              type: 'success'
+            })
+            this.roles.forEach(role => {
+              if (role.id === this.nameRole.id) {
+                role.name = this.nameRole.id
+              }
+            })
+            this.selRoleid = this.nameRole.id
+            this.load()
+            this.cancelModifyRoleForm()
+          })
+        }
+      })
+    },
+    cancelModifyRoleForm: function() {
+      this.nameRoleFormVisible = false
     }
   },
   mounted() {

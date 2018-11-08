@@ -1,13 +1,38 @@
 <template>
   <div>
-    <el-row :gutter="20">
-      <el-col :span="12" :offset="21">
-        <el-form @submit.native.prevent :inline="true">
+    <el-row>
+      <el-form @submit.native.prevent :inline="true">
+        <el-col :span="22">
+          <el-form-item>
+            <el-cascader @change="deptChange" style="width: 120px;"
+              expand-trigger="hover"
+              :options="allDepts"
+              change-on-select
+              :props="selProps"
+              v-model="deptidsParam"
+              :show-all-levels="false">
+            </el-cascader>
+          </el-form-item>
+          <el-form-item>
+            <el-input v-model="params.param" @keyup.native.enter="queryByPage" placeholder="请输入员工姓名/账号/手机/职位" style="width: 530px;">
+              <el-select slot="prepend" @change="statusChange" style="width: 120px;" v-model="params.status">
+                <el-option
+                  v-for="item in statusOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+              <el-button slot="append" @click="queryByPage" icon="el-icon-search"></el-button>
+            </el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="2">
           <el-form-item>
             <el-button type="primary" @click="openAdd" size="small">新增账号</el-button>
           </el-form-item>
-        </el-form>
-      </el-col>
+        </el-col>
+      </el-form>
     </el-row>
     <el-table :data="users" border style="width: 100%;" @sort-change="sortData" @cell-mouse-enter="assignUser" :row-class-name="tableRowClassName">
       <el-table-column prop="account" label="账号" sortable></el-table-column>
@@ -175,7 +200,7 @@ import { mapGetters } from 'vuex'
 import { queryUserByPage, addUser, editUser, enableUser, removeUser, resetPwd } from '@/api/bas/user'
 import { loadRole, roleMenus, userRoles, userMenus } from '@/api/bas/role'
 import { validateMobile, validatePassword, validateEmail, validateQQ } from '@/utils/validate'
-import { SUCCESS_TIP_TITLE, SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, WARNING_TIP_TITLE } from '@/utils/constant'
+import { SUCCESS_TIP_TITLE, SAVE_SUCCESS, EDIT_SUCCESS, REMOVE_SUCCESS, WARNING_TIP_TITLE, NUM_ID_ALL } from '@/utils/constant'
 import md5 from 'js-md5'
 
 export default {
@@ -282,13 +307,29 @@ export default {
       },
       total: 0,
       params: {
+        param: '',
+        status: '',
+        deptid: NUM_ID_ALL,
         order: 'desc',
         orderField: 'createdTime',
         pageNum: 1,
         pageSize: 10
       },
+      allDepts: [], // 查询用部门集合
+      deptidsParam: [NUM_ID_ALL], // 查询用部门选择数组
       users: [],
+      statusOptions: [{
+        value: '',
+        label: '全部状态'
+      }, {
+        value: 'T',
+        label: '启用'
+      }, {
+        value: 'F',
+        label: '禁用'
+      }],
       // ------编辑------
+      deptids: [],
       user: {},
       userRules: {
         account: [
@@ -323,7 +364,7 @@ export default {
       },
       formTitle: '',
       formVisible: false,
-      depts: [],
+      depts: this.$store.state.code.appCascadeCode.dept === undefined ? [] : this.$store.state.code.appCascadeCode.dept,
       pwdColor: {
         weak: '#fff',
         middle: '#fff',
@@ -396,6 +437,7 @@ export default {
   },
   methods: {
     queryByPage: function() {
+      this.params.deptid = this.deptidsParam[this.deptidsParam.length - 1]
       queryUserByPage(this.params).then(res => {
         this.users = res.data.list
         this.total = res.data.total
@@ -440,6 +482,14 @@ export default {
       this.params.orderField = prop
       this.queryByPage()
     },
+    deptChange: function() {
+      this.params.pageNum = 1
+      this.queryByPage()
+    },
+    statusChange: function() {
+      this.params.pageNum = 1
+      this.queryByPage()
+    },
     // ------编辑------
     openAdd: function() {
       this.roleCheckList = { code: [], console: [], bas: [], sys: [] }
@@ -454,8 +504,8 @@ export default {
             this.roles[rowcount].push(role)
           }
         })
+        this.deptids = this.appCascadeCode.dept
         this.user = { roleids: [] }
-        this.depts = this.appCascadeCode.dept === undefined ? [] : this.appCascadeCode.dept
         this.pwdColor = {
           weak: '#fff',
           middle: '#fff',
@@ -482,6 +532,7 @@ export default {
         userRoles(this.user.id).then(subres => {
           this.user.roleids = subres.data
           userMenus(this.user.id).then(ssubres => {
+            this.deptids = this.appCascadeCode.dept
             const menuActionMap = ssubres.data
             for (const key in menuActionMap) {
               const moduleCode = key.substr(0, (key.indexOf('_')))
@@ -503,7 +554,6 @@ export default {
           if (this.appCascadePathCode.dept[this.user.deptid]) {
             this.user.deptids = Object.assign([], this.appCascadePathCode.dept[this.user.deptid].path)
           }
-          this.depts = this.appCascadeCode.dept === undefined ? [] : this.appCascadeCode.dept
           this.formTitle = '编辑'
           this.formVisible = true
         })
@@ -630,6 +680,15 @@ export default {
     }
   },
   mounted() {
+    const allDept = {
+      name: '全部部门',
+      id: NUM_ID_ALL,
+      children: null
+    }
+    this.allDepts.push(allDept)
+    if (this.$store.state.code.appCascadeCode.dept !== undefined) {
+      this.allDepts = this.allDepts.concat(this.$store.state.code.appCascadeCode.dept)
+    }
     this.queryByPage()
   }
 }

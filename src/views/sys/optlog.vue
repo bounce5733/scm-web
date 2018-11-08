@@ -67,7 +67,7 @@ export default {
       }],
       dateRange: 'oneMonth',
       operatorOptions: [{
-        value: 'all',
+        value: '',
         label: '全部'
       }, {
         value: 'me',
@@ -96,7 +96,7 @@ export default {
           break
       }
       let isme = true
-      if (this.operator === 'all') {
+      if (this.operator === '') {
         isme = false
       }
       queryOptlogByPage(this.optType, isme, parseTime(startTime), parseTime(endTime), this.params).then(res => {

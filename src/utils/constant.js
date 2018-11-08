@@ -14,6 +14,8 @@ export const WARNING_TIP_TITLE = '警告'
 
 export const ERROR_TIP_TITLE = '错误'
 
+export const NUM_ID_ALL = -1 // 下拉框中全选,id为数字
+
 // 提示框停留时间
 
 export const TIP_DURATION_TIME = 3 * 1000
