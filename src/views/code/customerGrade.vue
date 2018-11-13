@@ -3,13 +3,13 @@
     <el-card>
       <div>
         <el-row>
-          <el-col :span="2" :offset="22">
-            <el-form @submit.native.prevent>
+          <el-form @submit.native.prevent>
+            <el-col :span="2" :offset="22">
               <el-form-item>
                 <el-button type="primary" size="small" :disabled="!actions.includes('addCustomerGrade')" @click="openAdd">新增</el-button>
               </el-form-item>
-            </el-form>
-          </el-col>
+            </el-col>
+          </el-form>
         </el-row>
         <el-table :data="customerGrades" border style="width: 100%;">
           <el-table-column :formatter="formatNameCol" prop="name" label="级别名称" sortable>

@@ -226,6 +226,7 @@ export default {
       })
     },
     openRegister: function() {
+      this.pwdValid = false
       this.registerInfo = {}
       this.registerFormVisible = true
     },

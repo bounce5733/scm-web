@@ -38,7 +38,7 @@ export const constantRouterMap = [
       path: 'dashboard',
       component: _import('dashboard/index'),
       name: 'dashboard_index',
-      meta: { title: '仪表盘', icon: 'dashboard', noCache: true }
+      meta: { title: '仪表盘', icon: 'dashboard' }
     }]
   }
 ]
@@ -60,12 +60,12 @@ export const asyncRouterMap = [
       path: '/component/table',
       component: _import('component/Layout'),
       name: 'component_table',
-      meta: { title: '表格', noCache: true },
+      meta: { title: '表格' },
       children: [{
         path: 'edit',
         component: _import('component/table/EditTable'),
         name: 'component_table_EditTable',
-        meta: { title: '编辑表格', noCache: true }
+        meta: { title: '编辑表格' }
       }]
     }]
   },
@@ -79,12 +79,12 @@ export const asyncRouterMap = [
       path: 'company',
       component: _import('bas/company'),
       name: 'bas_company',
-      meta: { title: '公司信息', noCache: true }
+      meta: { title: '公司信息' }
     }, {
       path: 'hr',
       component: _import('bas/hr/index'),
       name: 'bas_hr',
-      meta: { title: '部门与员工', noCache: true },
+      meta: { title: '部门与员工' },
       action: [{
         name: '角色授权', key: 'authRole'
       }]
@@ -100,7 +100,7 @@ export const asyncRouterMap = [
       path: 'warehouse',
       component: _import('code/warehouse'),
       name: 'code_warehouse',
-      meta: { title: '仓库', noCache: true },
+      meta: { title: '仓库' },
       action: [{
         name: '新增仓库', key: 'addWarehouse'
       }, {
@@ -118,7 +118,7 @@ export const asyncRouterMap = [
       path: 'productCatalog',
       component: _import('code/productCatalog'),
       name: 'code_productCatalog',
-      meta: { title: '商品分类', noCache: true },
+      meta: { title: '商品分类' },
       action: [{
         name: '新增商品分类', key: 'addProductCatalog'
       }, {
@@ -132,7 +132,7 @@ export const asyncRouterMap = [
       path: 'accountPeriod',
       component: _import('code/accountPeriod'),
       name: 'code_accountPeriod',
-      meta: { title: '账期类型', noCache: true },
+      meta: { title: '账期类型' },
       action: [{
         name: '新增账期', key: 'addAccountPeriod'
       }, {
@@ -146,7 +146,7 @@ export const asyncRouterMap = [
       path: 'unit',
       component: _import('code/unit'),
       name: 'code_unit',
-      meta: { title: '计量单位', noCache: true },
+      meta: { title: '计量单位' },
       action: [{
         name: '新增计量单位', key: 'addUnit'
       }, {
@@ -158,7 +158,7 @@ export const asyncRouterMap = [
       path: 'customerGrade',
       component: _import('code/customerGrade'),
       name: 'code_customerGrade',
-      meta: { title: '客户级别', noCache: true },
+      meta: { title: '客户级别' },
       action: [{
         name: '新增客户级别', key: 'addCustomerGrade'
       }, {
@@ -173,7 +173,7 @@ export const asyncRouterMap = [
   {
     path: '/console',
     component: Layout,
-    redirect: '/console/user',
+    redirect: '/console/code',
     name: 'console',
     meta: { title: '控制台', icon: 'setting' },
     children: [{
@@ -183,9 +183,14 @@ export const asyncRouterMap = [
       meta: { title: '角色' }
     }, {
       path: 'code',
-      component: _import('sys/code'),
-      name: 'sys_code',
+      component: _import('console/code'),
+      name: 'console_code',
       meta: { title: '字典' }
+    }, {
+      path: 'syslog',
+      component: _import('console/syslog'),
+      name: 'console_syslog',
+      meta: { title: '系统日志' }
     }]
   },
   {
@@ -197,12 +202,45 @@ export const asyncRouterMap = [
       path: 'optlog',
       component: _import('sys/optlog'),
       name: 'sys_optlog',
-      meta: { title: '日志', noCache: true }
+      meta: { title: '操作日志' },
+      action: [{
+        name: '查询操作日志', key: 'queryOptlog'
+      }]
     }, {
       path: 'set',
       component: _import('sys/set'),
       name: 'sys_set',
-      meta: { title: '设置', noCache: true }
+      meta: { title: '设置' }
+    }]
+  },
+  {
+    path: '/order',
+    component: Layout,
+    name: 'order',
+    meta: { title: '订单', icon: 'setting' },
+    children: [{
+      path: '/order/manager',
+      component: _import('order/manager/index'),
+      name: 'order_manager',
+      meta: { title: '订单管理' },
+      children: [{
+        path: 'purchase',
+        component: _import('order/manager/purchase/index'),
+        name: 'order_manager_purchase',
+        meta: { title: '订货单' },
+        action: [{
+          name: '新增订单', key: 'addPurchaseOrder'
+        }, {
+          name: '导出订单', key: 'exportPurchaseOrder'
+        }, {
+          name: '导入订单', key: 'importPurchaseOrder'
+        }]
+      }, {
+        path: 'return',
+        component: _import('order/manager/return/index'),
+        name: 'order_manager_return',
+        meta: { title: '退货单' }
+      }]
     }]
   },
   { path: '*', redirect: '/404', hidden: true }

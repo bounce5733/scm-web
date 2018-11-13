@@ -22,4 +22,6 @@ export const TIP_DURATION_TIME = 3 * 1000
 
 export const SCM_API_BASE = 'http://localhost:9111'
 
+export const SCM_WS_BASE = 'ws://localhost:9111'
+
 export const BASE64_IMG_PREFIX = 'data:image/jpg;base64,'

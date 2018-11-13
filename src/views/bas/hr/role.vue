@@ -66,7 +66,7 @@ export default {
     return {
       roles: [],
       selRoleid: undefined,
-      checkList: { code: [], console: [], bas: [], sys: [] },
+      checkList: { order: [], code: [], console: [], bas: [], sys: [] },
       modelKeyName: {}, // 顶级模块名值对
       modelHeight: {}, // 权限选择模块背景高度
       // ------修改名称------
@@ -113,6 +113,8 @@ export default {
   filters: {
     modelKeyToName: function(value) {
       switch (value) {
+        case 'order':
+          return '订单'
         case 'code':
           return '字典'
         case 'console':
@@ -186,7 +188,7 @@ export default {
     },
     roleChange: function(roleid) {
       this.selRoleid = roleid
-      this.checkList = { code: [], console: [], bas: [], sys: [] }
+      this.checkList = { order: [], code: [], console: [], bas: [], sys: [] }
       roleMenus(roleid).then(res => {
         res.data.forEach(item => {
           const key = item.menuKey.substr(0, item.menuKey.indexOf('_'))
