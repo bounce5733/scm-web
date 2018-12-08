@@ -1,35 +1,33 @@
 <template>
   <div class="app-container">
     <el-card>
-      <div>
-        <el-row>
-          <el-form @submit.native.prevent>
-            <el-col :span="2" :offset="22">
-              <el-form-item>
-                <el-button type="primary" size="small" :disabled="!actions.includes('addCustomerGrade')" @click="openAdd">新增</el-button>
-              </el-form-item>
-            </el-col>
-          </el-form>
-        </el-row>
-        <el-table :data="customerGrades" border style="width: 100%;">
-          <el-table-column :formatter="formatNameCol" prop="name" label="级别名称" sortable>
-          </el-table-column>
-          <el-table-column :formatter="formatDiscountCol" prop="discount" label="订货折扣" sortable>
-          </el-table-column>
-          <el-table-column label="操作" align="center" width="60">
-            <template slot-scope="scope">
-              <el-dropdown placement="bottom" @command="handleAction" @visible-change="customerGrade = Object.assign({}, scope.row)">
-                <i class="el-icon-more"></i>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="edit" :disabled="!actions.includes('editCustomerGrade')"><i class="el-icon-edit"></i>&nbsp;修改</el-dropdown-item>
-                  <el-dropdown-item command="moveTop" :disabled="!actions.includes('moveTopCustomerGrade')"  divided><i class="el-icon-upload2"></i>&nbsp;置顶</el-dropdown-item>
-                  <el-dropdown-item command="remove" :disabled="!actions.includes('removeCustomerGrade')"  divided><i class="el-icon-delete"></i>&nbsp;删除</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
+      <el-row>
+        <el-form @submit.native.prevent>
+          <el-col :span="2" :offset="22">
+            <el-form-item>
+              <el-button type="primary" size="small" :disabled="!actions.includes('addCustomerGrade')" @click="openAdd">新增</el-button>
+            </el-form-item>
+          </el-col>
+        </el-form>
+      </el-row>
+      <el-table :data="customerGrades" border style="width: 100%;">
+        <el-table-column :formatter="formatNameCol" prop="name" label="级别名称" sortable>
+        </el-table-column>
+        <el-table-column :formatter="formatDiscountCol" prop="discount" label="订货折扣" sortable>
+        </el-table-column>
+        <el-table-column label="操作" align="center" width="60">
+          <template slot-scope="scope">
+            <el-dropdown placement="bottom" @command="handleAction" @visible-change="customerGrade = Object.assign({}, scope.row)">
+              <i class="el-icon-more"></i>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="edit" :disabled="!actions.includes('editCustomerGrade')"><i class="el-icon-edit"></i>&nbsp;修改</el-dropdown-item>
+                <el-dropdown-item command="moveTop" :disabled="!actions.includes('moveTopCustomerGrade')"  divided><i class="el-icon-upload2"></i>&nbsp;置顶</el-dropdown-item>
+                <el-dropdown-item command="remove" :disabled="!actions.includes('removeCustomerGrade')"  divided><i class="el-icon-delete"></i>&nbsp;删除</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
     <!--编辑-->
     <el-dialog title="新增" width="40%" :close-on-click-modal="false" :visible.sync="formVisible" :show-close="false">

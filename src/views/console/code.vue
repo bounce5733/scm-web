@@ -6,7 +6,7 @@
           <el-col :span="2" :offset="21">
             <el-form @submit.native.prevent :inline="true">
               <el-form-item>
-                <el-button type="primary" :disabled="!actions.includes('addCode')" size="small" @click="openCodeAdd">新增</el-button>
+                <el-button type="primary" size="small" @click="openCodeAdd">新增</el-button>
               </el-form-item>
             </el-form>
           </el-col>
@@ -17,7 +17,7 @@
           <el-table-column label="操作" width="78">
             <template slot-scope="scope">
               <el-button-group>
-                <el-button type="danger" size="small" :disabled="!actions.includes('removeCode')" @click="removeCode(scope.row.code)">删除</el-button>
+                <el-button type="danger" size="small"  @click="removeCode(scope.row.code)">删除</el-button>
               </el-button-group>
             </template>
           </el-table-column>
@@ -28,7 +28,7 @@
           <el-col :span="2" :offset="21">
             <el-form @submit.native.prevent :inline="true">
               <el-form-item>
-                <el-button type="primary" :disabled="code.code === undefined || !actions.includes('addCodeItem')" @click="openAddItem" size="small">新增</el-button>
+                <el-button type="primary" :disabled="code.code === undefined" @click="openAddItem" size="small">新增</el-button>
               </el-form-item>
             </el-form>
           </el-col>
@@ -46,9 +46,9 @@
             <template slot-scope="scope">
               <el-button-group>
                 <el-button type="primary" @click="openAddSubItem(scope.row)" icon="el-icon-plus" size="small">新增子类</el-button>
-                <el-button type="primary" :disabled="!actions.includes('editCodeItem')" @click="openEditItem(scope.$index, scope.row)" size="small">修改</el-button>
+                <el-button type="primary" @click="openEditItem(scope.$index, scope.row)" size="small">修改</el-button>
                 <el-button type="primary" icon="el-icon-upload2" @click="moveTop(scope.row)" size="small">置顶</el-button>
-                <el-button type="danger" :disabled="!actions.includes('removeCodeItem')" @click="removeItem(scope.$index, scope.row)" size="small">删除</el-button>
+                <el-button type="danger"  @click="removeItem(scope.$index, scope.row)" size="small">删除</el-button>
               </el-button-group>
             </template>
           </el-table-column>
@@ -130,7 +130,6 @@ export default {
     }
 
     return {
-      actions: this.$store.state.permission.menus[this.$route.name],
       codes: [], // 系统字典列表
       code: {}, // 当前选中字典
       // ------新增类型------

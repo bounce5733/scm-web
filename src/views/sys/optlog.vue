@@ -1,31 +1,31 @@
 <template>
   <div class="app-container">
-    <el-row>
-      <el-form :inline="true" @submit.native.prevent>
-        <el-form-item>
-          <el-input v-model="optType" @keyup.native.enter="queryByPage" placeholder="请输入操作类型关键字" style="width: 530px;">
-            <el-select slot="prepend" @change="dateChange" style="width: 110px;" v-model="dateRange">
-              <el-option
-                v-for="item in dateRangeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-            <span slot="prepend">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <el-select slot="prepend" @change="operatorChange" style="width: 80px;" v-model="operator">
-              <el-option
-                v-for="item in operatorOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-            <el-button slot="append" @click="queryByPage" icon="el-icon-search"></el-button>
-          </el-input>
-        </el-form-item>
-      </el-form>
-    </el-row>
+    <el-form :inline="true" @submit.native.prevent>
+      <el-form-item>
+        <el-input v-model="optType" @keyup.native.enter="queryByPage" placeholder="请输入操作类型关键字" style="width: 530px;">
+          <el-select slot="prepend" @change="dateChange" style="width: 110px;" v-model="dateRange">
+            <el-option
+              v-for="item in dateRangeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <span slot="prepend">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          </span>
+          <el-select slot="prepend" @change="operatorChange" style="width: 80px;" v-model="operator">
+            <el-option
+              v-for="item in operatorOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-button slot="append" @click="queryByPage" icon="el-icon-search"></el-button>
+        </el-input>
+      </el-form-item>
+    </el-form>
     <el-table :data="logs" @sort-change="sortData" border style="width: 100%;">
       <el-table-column prop="userName" label="操作人" width="100" sortable></el-table-column>
       <el-table-column prop="createdTime" label="时间" width="160" sortable></el-table-column>

@@ -1,6 +1,13 @@
 import request from '@/utils/request'
 import { SCM_API_BASE } from '@/utils/constant'
 
+export function loadAllUser() {
+  return request({
+    url: SCM_API_BASE + '/bas/users/load',
+    method: 'get'
+  })
+}
+
 export function queryUserByPage(params) {
   return request({
     url: SCM_API_BASE + '/bas/users',

@@ -219,13 +219,13 @@ export const asyncRouterMap = [
     name: 'order',
     meta: { title: '订单', icon: 'setting' },
     children: [{
-      path: '/order/manager',
-      component: _import('order/manager/index'),
+      path: '/order/manage',
+      component: _import('order/manage/index'),
       name: 'order_manager',
       meta: { title: '订单管理' },
       children: [{
         path: 'purchase',
-        component: _import('order/manager/purchase/index'),
+        component: _import('order/manage/purchase/index'),
         name: 'order_manager_purchase',
         meta: { title: '订货单' },
         action: [{
@@ -237,9 +237,34 @@ export const asyncRouterMap = [
         }]
       }, {
         path: 'return',
-        component: _import('order/manager/return/index'),
+        component: _import('order/manage/return/index'),
         name: 'order_manager_return',
         meta: { title: '退货单' }
+      }]
+    }]
+  },
+  {
+    path: '/cus',
+    component: Layout,
+    name: 'cus',
+    meta: { title: '客户', icon: 'setting' },
+    children: [{
+      path: '/cus/manage',
+      component: _import('cus/index'),
+      name: 'cus_manage',
+      meta: { title: '客户管理' },
+      children: [{
+        path: 'customer',
+        component: _import('cus/manage/customer'),
+        name: 'cus_manage_customer',
+        meta: { title: '客户列表' },
+        action: [{
+          name: '新增客户', key: 'addCustomer'
+        }, {
+          name: '导出客户', key: 'exportCustomer'
+        }, {
+          name: '导入客户', key: 'importCustomer'
+        }]
       }]
     }]
   },

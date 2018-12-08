@@ -307,6 +307,7 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
   .legend-title {
     color: #03b8cc;
+    font-size: 1rem;
     font-weight: 500;
     margin-bottom: 30px;
   }

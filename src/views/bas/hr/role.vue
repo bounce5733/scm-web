@@ -66,7 +66,7 @@ export default {
     return {
       roles: [],
       selRoleid: undefined,
-      checkList: { order: [], code: [], console: [], bas: [], sys: [] },
+      checkList: { order: [], cus: [], code: [], console: [], bas: [], sys: [] },
       modelKeyName: {}, // 顶级模块名值对
       modelHeight: {}, // 权限选择模块背景高度
       // ------修改名称------
@@ -115,6 +115,8 @@ export default {
       switch (value) {
         case 'order':
           return '订单'
+        case 'cus':
+          return '客户'
         case 'code':
           return '字典'
         case 'console':

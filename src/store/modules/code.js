@@ -2,11 +2,11 @@ import { loadAppCode, loadSysCode, loadSysPathCode, loadAppCascadeCode, loadAppC
 
 const codes = {
   state: {
-    sysCode: [],
-    sysPathCode: [],
-    appCode: [],
-    appCascadeCode: [],
-    appCascadePathCode: []
+    sysCode: [], // {type:[codes]}
+    sysPathCode: [], // {id:{path:'',name:''}}
+    appCode: [], // {appid:{type:{id,name}}}
+    appCascadeCode: [], // {appid:{type:[BaseCascaderCode]}}
+    appCascadePathCode: [] // {appid:{typename:{id:{path:'',name:''}}}
   },
   mutations: {
     ADD_SYS_CODE(state, code) {
