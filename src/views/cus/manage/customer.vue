@@ -592,6 +592,7 @@ export default {
             message: SAVE_SUCCESS,
             type: 'success'
           })
+          this.formVisible = false
         })
       }
     },
